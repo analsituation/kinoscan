@@ -12,9 +12,7 @@
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
     "^@components/(.*)$",
-    "^@hooks/(.*)$",
-    "^@types/(.*)$",
-    "^@store/(.*)$",
+    "^@customTypes/(.*)$",
     "^../(.*)",
     "^./(.*)",
     "(.sass)$"

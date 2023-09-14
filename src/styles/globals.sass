@@ -1,0 +1,23 @@
+@tailwind base
+@tailwind components
+@tailwind utilities
+
+// @import './_reset.sass'
+
+html, body
+  width: 100%
+  height: 100%
+
+body
+  background-color: theme('colors.white')
+  color: theme('colors.dark')
+
+.overlay-gradient 
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  bottom: 0
+  z-index: -1
+  background: rgb(244,244,244)
+  background: linear-gradient(90deg, rgba(244,244,244,1) 0%, rgba(244,244,244,1) 30%, rgba(244,244,244,1) 44%, rgba(244,244,244,0.7399334733893557) 57%, rgba(244,244,244,0.47102591036414565) 77%, rgba(244,244,244,0.15449929971988796) 87%, rgba(244,244,244,0) 100%)

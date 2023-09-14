@@ -5,6 +5,10 @@
 /.pnp
 .pnp.js
 
+TODO.txt
+/.vscode/
+.env.local
+
 # testing
 /coverage
 

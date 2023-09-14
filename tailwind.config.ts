@@ -10,9 +10,19 @@ const config: Config = {
         lightGrey: '#f4f4f4',
         darkGrey: '#373737',
         dark: '#141414'
+      },
+      screens: {
+        md: {
+          max: '768px'
+        }
+      },
+      zIndex: {
+        1: '1',
+        2: '2',
+        3: '3'
       }
     }
   },
-  plugins: []
+  plugins: [require('tailwind-scrollbar')]
 }
 export default config
