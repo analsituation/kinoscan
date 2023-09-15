@@ -1,11 +1,11 @@
-import { IMovie } from '@/customTypes/movie'
+import { ITV } from '@/customTypes/TV'
 
 import Section from '../Section'
-import Card from '../Card'
+import BigCard from '../BigCard'
 
-const getFilmsInTheaters = async () => {
+const getPopularTV = async () => {
   try {
-    const url = process.env.API_URL! + '?ticketsOnSale=true&year=2023'
+    const url = process.env.API_URL! + '?type=tv-series&sortField=votes.kp&sortType=-1'
     const api_key = process.env.API_KEY!
     const response = await fetch(url, {
       method: 'GET',
@@ -28,15 +28,15 @@ const getFilmsInTheaters = async () => {
   }
 }
 
-const InTheaters = async () => {
-  const films = await getFilmsInTheaters()
+const PopularTV = async () => {
+  const tvSeries = await getPopularTV()
 
   return (
-    <Section title='В прокате' carousel movieCard>
-      {films.map((film: IMovie) => (
-        <Card film={film}></Card>
+    <Section title='Популярные сериалы' carousel>
+      {tvSeries.map((tv: ITV) => (
+        <BigCard entity={tv}></BigCard>
       ))}
     </Section>
   )
 }
-export default InTheaters
+export default PopularTV

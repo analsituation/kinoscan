@@ -7,7 +7,7 @@ import { GoSearch } from 'react-icons/go'
 import { searchFilms } from '@/api/api'
 import { useDebounce } from '@/hooks/debounce'
 
-import { IFilm } from '@/customTypes/Movie'
+import { IFilm } from '@/customTypes/movie'
 
 const Search: FC = () => {
   const [isFocused, setIsFocused] = useState(false)

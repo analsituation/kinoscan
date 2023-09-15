@@ -1,4 +1,4 @@
-import { IFilm } from '@/customTypes/Movie'
+import { IMovie } from '@/customTypes/movie'
 
 import Section from '../Section'
 import BigCard from '../BigCard'
@@ -33,8 +33,8 @@ const TopRatedMovies = async () => {
 
   return (
     <Section title='Фильмы с наивысшим рейтингом' carousel>
-      {films.map((film: IFilm) => (
-        <BigCard film={film}></BigCard>
+      {films.map((film: IMovie) => (
+        <BigCard entity={film}></BigCard>
       ))}
     </Section>
   )

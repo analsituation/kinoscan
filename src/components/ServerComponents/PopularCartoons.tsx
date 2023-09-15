@@ -1,11 +1,10 @@
-import { IMovie } from '@/customTypes/movie'
-
 import Section from '../Section'
-import Card from '../Card'
+import BigCard from '../BigCard'
+import { ICartoon } from '@/customTypes/cartoon'
 
-const getFilmsInTheaters = async () => {
+const getPopularCartoons = async () => {
   try {
-    const url = process.env.API_URL! + '?ticketsOnSale=true&year=2023'
+    const url = process.env.API_URL! + '?type=cartoon&sortField=votes.kp&sortType=-1'
     const api_key = process.env.API_KEY!
     const response = await fetch(url, {
       method: 'GET',
@@ -28,15 +27,15 @@ const getFilmsInTheaters = async () => {
   }
 }
 
-const InTheaters = async () => {
-  const films = await getFilmsInTheaters()
+const PopularCartoons = async () => {
+  const cartoons = await getPopularCartoons()
 
   return (
-    <Section title='В прокате' carousel movieCard>
-      {films.map((film: IMovie) => (
-        <Card film={film}></Card>
+    <Section title='Популярные мультфильмы' carousel>
+      {cartoons.map((cartoon: ICartoon) => (
+        <BigCard entity={cartoon}></BigCard>
       ))}
     </Section>
   )
 }
-export default InTheaters
+export default PopularCartoons

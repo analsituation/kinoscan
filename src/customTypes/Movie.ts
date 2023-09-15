@@ -1,4 +1,6 @@
-export interface IFilm {
+import { genres } from './genre'
+
+export interface IMovie {
   id: number
   externalId: IExternalId
   name: string
@@ -17,13 +19,13 @@ export interface IFilm {
   logo?: ILogo
 }
 
-export interface IExternalId {
+interface IExternalId {
   kpHD: string
   imdb: string
   tmdb: number
 }
 
-export interface IRating {
+interface IRating {
   kp: number
   imdb: number
   filmCritics: number
@@ -31,7 +33,7 @@ export interface IRating {
   await: any
 }
 
-export interface IVotes {
+interface IVotes {
   kp: number
   imdb: number
   filmCritics: number
@@ -39,19 +41,19 @@ export interface IVotes {
   await: number
 }
 
-export interface IPoster {
+interface IPoster {
   url: string
   previewUrl: string
 }
 
-export interface IGenre {
+interface IGenre {
+  name: genres
+}
+
+interface ICountry {
   name: string
 }
 
-export interface ICountry {
-  name: string
-}
-
-export interface ILogo {
+interface ILogo {
   url: string
 }

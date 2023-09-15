@@ -7,6 +7,6 @@ interface ContainerProps {
 }
 
 const Container: FC<PropsWithChildren<ContainerProps>> = ({ className, children }) => {
-  return <div className={clsx('py-3 max-w-[1200px] mx-auto', className && className)}>{children}</div>
+  return <div className={clsx('p-3 max-w-[1200px] mx-auto', className && className)}>{children}</div>
 }
 export default Container

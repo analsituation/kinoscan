@@ -2,16 +2,18 @@ import { FC } from 'react'
 import Image from 'next/image'
 import { IoPlayOutline } from 'react-icons/io5'
 
-import { IFilm } from '@/customTypes/Movie'
+import { ITV } from '@/customTypes/TV'
+import { IMovie } from '@/customTypes/movie'
+import { ICartoon } from '@/customTypes/cartoon'
 
 interface BigCardProps {
-  film: IFilm
+  entity: IMovie | ITV | ICartoon
 }
 
-const BigCard: FC<BigCardProps> = ({ film }) => {
-  const filmName = film.name || film.alternativeName || film.enName
-  const filmDescription = film.description || 'No description...'
-  const filmPoster = film.poster.url || film.poster.previewUrl || './ks-stub.svg'
+const BigCard: FC<BigCardProps> = ({ entity }) => {
+  const name = entity.name || entity.alternativeName || entity.enName
+  const description = entity.description || 'No description...'
+  const poster = entity.poster.url || entity.poster.previewUrl || './ks-stub.svg'
 
   return (
     <div
@@ -23,11 +25,11 @@ const BigCard: FC<BigCardProps> = ({ film }) => {
     >
       <div className='overlay-gradient'></div>
       <div className='absolute left-0 top-0 bottom-0 w-[200px]'>
-        <Image src={filmPoster} alt={filmName} layout='fill' />
+        <Image src={poster} alt={name} layout='fill' />
       </div>
       <div className='flex flex-col items-start justify-center pl-[200px] h-full gap-6'>
-        <p className='text-xl'>{filmName}</p>
-        <p className='text-sm max-w-[80%] line-clamp-5'>{filmDescription}</p>
+        <p className='text-xl'>{name}</p>
+        <p className='text-sm max-w-[80%] line-clamp-5'>{description}</p>
         <button className='px-3 py-1.5 flex items-center gap-3 bg-accent rounded-md text-lightGrey opacity-80 hover:opacity-95'>
           <IoPlayOutline size={18} className='-mt-[2px]' />
           <span>Play</span>
