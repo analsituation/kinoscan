@@ -11,8 +11,10 @@
   "bracketSpacing": true,
   "importOrder": [
     "<THIRD_PARTY_MODULES>",
-    "^@components/(.*)$",
+    "^@api/(.*)$",
+    "^@hooks/(.*)$",
     "^@customTypes/(.*)$",
+    "^@components/(.*)$",
     "^../(.*)",
     "^./(.*)",
     "(.sass)$"

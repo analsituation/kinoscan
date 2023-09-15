@@ -8,6 +8,7 @@ import { GoSearch } from 'react-icons/go'
 import Container from '../Container'
 
 import styles from './Header.module.sass'
+import Search from '../Search/Search'
 
 const Header: FC = () => {
   const pathname = usePathname()
@@ -28,14 +29,7 @@ const Header: FC = () => {
             </Link>
           </div>
         </div>
-        <div className='flex items-center relative'>
-          <input
-            className='outline-0 bg-darkGrey px-3 min-w-[300px] py-1 rounded-sm'
-            type='text'
-            placeholder='Search'
-          />
-          <GoSearch className='text-white ml-2' />
-        </div>
+        <Search />
       </Container>
     </div>
   )
