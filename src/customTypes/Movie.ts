@@ -1,4 +1,5 @@
 import { genres } from './genre'
+import { IPerson } from './person'
 
 export interface IMovie {
   id: number
@@ -9,14 +10,31 @@ export interface IMovie {
   type: string
   year: number
   description: string
-  shortDescription?: string
+  shortDescription: string
   rating: IRating
   votes: IVotes
   movieLength: number
   poster: IPoster
+  backdrop: IBackdrop
   genres: IGenre[]
   countries: ICountry[]
-  logo?: ILogo
+  persons: IPerson[]
+  logo: ILogo
+  videos: {
+    trailers: ITrailer[]
+  }
+}
+
+interface ITrailer {
+  url: string
+  name: string
+  site: string
+  type: string
+}
+
+interface IBackdrop {
+  url: string
+  previewUrl: string
 }
 
 interface IExternalId {

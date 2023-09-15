@@ -2,7 +2,7 @@
 @tailwind components
 @tailwind utilities
 
-// @import './_reset.sass'
+@import './_reset.sass'
 
 html, body
   width: 100%
@@ -21,3 +21,13 @@ body
   z-index: -1
   background: rgb(244,244,244)
   background: linear-gradient(90deg, rgba(244,244,244,1) 0%, rgba(244,244,244,1) 30%, rgba(244,244,244,1) 44%, rgba(244,244,244,0.7399334733893557) 57%, rgba(244,244,244,0.47102591036414565) 77%, rgba(244,244,244,0.15449929971988796) 87%, rgba(244,244,244,0) 100%)
+
+.backdrop-gradient 
+  position: absolute
+  left: 0
+  right: 0
+  top: 0
+  bottom: 0
+  z-index: 1
+  background: rgb(20, 20, 20)
+  background: linear-gradient(90deg, rgba(20, 20, 20,1) 0%, rgba(20, 20, 20,1) 22%, rgba(20, 20, 20,0.99) 24%, rgba(20, 20, 20,0.98) 26%, rgba(20, 20, 20,0.97) 28%, rgba(20, 20, 20,0.9) 33%, rgba(20, 20, 20,0) 52%, rgba(20, 20, 20,0.9) 67%, rgba(20, 20, 20,0.97) 72%, rgba(20, 20, 20,0.98) 74%, rgba(20, 20, 20,0.99) 76%, rgba(20, 20, 20,1) 78%, rgba(20, 20, 20,1) 100%)

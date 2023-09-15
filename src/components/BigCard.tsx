@@ -11,9 +11,10 @@ interface BigCardProps {
 }
 
 const BigCard: FC<BigCardProps> = ({ entity }) => {
+  console.log(entity)
   const name = entity.name || entity.alternativeName || entity.enName
   const description = entity.description || 'No description...'
-  const poster = entity.poster.url || entity.poster.previewUrl || './ks-stub.svg'
+  const poster = entity.poster.previewUrl || entity.poster.url || './ks-stub.svg'
 
   return (
     <div

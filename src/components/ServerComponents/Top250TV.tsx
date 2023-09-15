@@ -1,11 +1,10 @@
-import { IMovie } from '@/customTypes/movie'
-
 import Section from '../Section'
-import Card from '../Card'
+import BigCard from '../BigCard'
 
-const getFilmsInTheaters = async () => {
+const getRandomTop250TV = async () => {
+  const number = Math.floor(Math.random() * (250 - 1) + 1)
   try {
-    const url = process.env.API_URL! + '?ticketsOnSale=true&year=2023'
+    const url = process.env.API_URL! + `?isSeries=true&top250=${number}`
     const api_key = process.env.API_KEY!
     const response = await fetch(url, {
       method: 'GET',
@@ -22,21 +21,19 @@ const getFilmsInTheaters = async () => {
     }
 
     const data = await response.json()
-    return data.docs
+    return data.docs[0]
   } catch (error) {
     console.error('Ошибка:', error)
   }
 }
 
-const InTheaters = async () => {
-  const movies = await getFilmsInTheaters()
+const RandomTop250TV = async () => {
+  const TV = await getRandomTop250TV()
 
   return (
-    <Section title='В прокате' carousel movieCard>
-      {movies.map((movie: IMovie) => (
-        <Card entity={movie}></Card>
-      ))}
+    <Section title={`Случайный сериал из Топ250`} carousel={false}>
+      <BigCard entity={TV}></BigCard>
     </Section>
   )
 }
-export default InTheaters
+export default RandomTop250TV

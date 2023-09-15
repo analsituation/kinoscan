@@ -15,6 +15,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'st.kp.yandex.net',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'imagetmdb.com',
+        port: ''
       }
     ]
   }
