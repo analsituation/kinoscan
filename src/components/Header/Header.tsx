@@ -3,7 +3,6 @@
 import { FC } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { GoSearch } from 'react-icons/go'
 
 import Container from '../Container'
 
@@ -24,7 +23,7 @@ const Header: FC = () => {
             <Link className={pathname === 'movies' ? styles.link_active : styles.link} href='/movies'>
               Movies
             </Link>
-            <Link className={pathname === 'tv' ? styles.link_active : styles.link} href='/tv'>
+            <Link className={pathname === 'tv-series' ? styles.link_active : styles.link} href='/tv-series'>
               TV
             </Link>
           </div>

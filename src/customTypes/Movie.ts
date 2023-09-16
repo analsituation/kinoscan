@@ -6,7 +6,7 @@ export interface IMovie {
   externalId: IExternalId
   name: string
   alternativeName: string
-  enName: any
+  enName: string
   type: string
   year: number
   description: string
