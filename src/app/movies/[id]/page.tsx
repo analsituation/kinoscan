@@ -1,8 +1,10 @@
+import Image from 'next/image'
+import { Metadata } from 'next'
+
 import Card from '@/components/Card'
 import Section from '@/components/Section'
 import { IMovie } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
-import Image from 'next/image'
 
 const getRandomTop250TV = async (id: number) => {
   try {
@@ -29,22 +31,33 @@ const getRandomTop250TV = async (id: number) => {
   }
 }
 
-const MoviePage = async () => {
-  const movie: IMovie = await getRandomTop250TV(251733)
+type MoviePageProps = {
+  params: {
+    id: number
+  }
+}
+
+export async function generateMetadata({ params: { id } }: MoviePageProps): Promise<Metadata> {
+  const movie: IMovie = await getRandomTop250TV(+id)
+  return {
+    title: movie.name
+  }
+}
+
+const MoviePage = async ({ params: { id } }: MoviePageProps) => {
+  const movie: IMovie = await getRandomTop250TV(+id)
 
   const name = movie.name || movie.alternativeName || movie.enName
   const description = movie.description || 'No description...'
-  const poster = movie.poster.previewUrl || movie.poster.url || './ks-stub.svg'
+  const poster = movie.poster?.previewUrl || '/ks-stub.svg'
 
   const castIdSet = new Set<number>()
   const cast: IPerson[] = []
 
   movie.persons.forEach(person => {
-    if (!castIdSet.has(person.id)) {
-      if (person.profession === 'актеры' || person.profession === 'режиссеры' || person.profession === 'продюсеры') {
-        castIdSet.add(person.id)
-        cast.push(person)
-      }
+    if (!castIdSet.has(person.id) && person.profession === 'актеры') {
+      castIdSet.add(person.id)
+      cast.push(person)
     }
   })
 
@@ -60,7 +73,7 @@ const MoviePage = async () => {
           alt={name}
           width={200}
           height={200}
-          className='w-[200px] min-w-[200px] h-[300px] mobile:mx-auto'
+          className='w-[200px] min-w-[200px] h-[300px] mobile:mx-auto shadow-md'
         ></Image>
         <div className='px-3 flex flex-col items-start gap-5'>
           <p className='text-2xl text-lightGrey line-clamp-1'>{name}</p>
@@ -77,19 +90,17 @@ const MoviePage = async () => {
           <p className='line-clamp-3 opacity-[0.9]'>{description}</p>
         </div>
       </Section>
-      <Section title='Casts' hidden={cast.length === 0}>
+      <Section title='В ролях' hidden={cast.length === 0}>
         <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-center gap-3'>
+          <div className='flex items-start gap-3'>
             {cast.map(actor => (
-              <div className='flex-shrink-0 w-[200px] mb-6' key={actor.id}>
-                <Card key={actor.id} entity={actor}></Card>
-              </div>
+              <Card key={actor.id} entity={actor}></Card>
             ))}
           </div>
         </div>
       </Section>
-      <Section title='Trailers' hidden={movie.videos.trailers.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
+      <Section title='Трейлеры' hidden={movie.videos.trailers.length === 0}>
+        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-white'>
           <div className='flex items-center gap-3 h-[300px]'>
             {movie.videos.trailers.map((trailer, ind) => (
               <a href={trailer.url} key={ind}>
@@ -97,6 +108,25 @@ const MoviePage = async () => {
                   <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'></div>
                 </div>
               </a>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      <Section title='Другие фильмы этой серии' hidden={movie.sequelsAndPrequels.length === 0}>
+        <div className=' overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-white'>
+          <div className='flex items-start gap-3 h-[300px]'>
+            {movie.sequelsAndPrequels.map(movie => (
+              <Card entity={movie}></Card>
+            ))}
+          </div>
+        </div>
+      </Section>
+      <Section title='Похожее' hidden={movie.similarMovies.length === 0}>
+        <div className='overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-white'>
+          <div className='flex items-start gap-3 h-[300px]'>
+            {movie.similarMovies.map(movie => (
+              <Card entity={movie}></Card>
             ))}
           </div>
         </div>

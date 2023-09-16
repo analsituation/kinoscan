@@ -14,15 +14,26 @@ export interface IMovie {
   rating: IRating
   votes: IVotes
   movieLength: number
-  poster: IPoster
+  poster: IPoster | null
   backdrop: IBackdrop
   genres: IGenre[]
   countries: ICountry[]
   persons: IPerson[]
+  sequelsAndPrequels: IMovieShort[]
+  similarMovies: IMovieShort[]
   logo: ILogo
   videos: {
     trailers: ITrailer[]
   }
+}
+
+export interface IMovieShort {
+  id: number
+  name: string
+  enName: string
+  alternativeName: string
+  type: string
+  poster: IPoster
 }
 
 interface ITrailer {
