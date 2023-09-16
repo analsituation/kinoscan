@@ -3,8 +3,8 @@ import { Metadata } from 'next'
 
 import Card from '@/components/Card'
 import Section from '@/components/Section'
-import { IMovie } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
+import { IMovie } from '@/customTypes/movie'
 
 const getMovieById = async (id: number) => {
   try {
