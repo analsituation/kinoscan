@@ -1,4 +1,4 @@
-import { IMovie, IMovieShort } from '@/customTypes/movie'
+import { IMovieShort } from '@/customTypes/movie'
 
 import Section from '../Section'
 import Card from '../Card'

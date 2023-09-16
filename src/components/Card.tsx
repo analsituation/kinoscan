@@ -1,15 +1,14 @@
 import Image from 'next/image'
-import { FC } from 'react'
+import Link from 'next/link'
 
 import { IMovieShort } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
-import Link from 'next/link'
 
 interface CardProps {
   entity: IMovieShort | IPerson
 }
 
-const Card: FC<CardProps> = ({ entity }) => {
+const Card = ({ entity }: CardProps) => {
   let name
   let photo
 
