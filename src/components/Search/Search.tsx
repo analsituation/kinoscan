@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 import { GoSearch } from 'react-icons/go'
 
@@ -13,6 +14,8 @@ import Link from 'next/link'
 const Search: FC = () => {
   const [isFocused, setIsFocused] = useState(false)
   const [dropdown, setDropdown] = useState(false)
+
+  const router = useRouter()
 
   const [query, setQuery] = useState('')
   const [searchResult, setSearchResult] = useState<IMovie[]>([])
@@ -27,6 +30,13 @@ const Search: FC = () => {
       setDropdown(false)
     }
   }, [debounced])
+
+  const searchHandler = () => {
+    if (query.length) {
+      setQuery('')
+      router.push(`/search?query=${query}`)
+    }
+  }
 
   return (
     <>
@@ -43,7 +53,7 @@ const Search: FC = () => {
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
-        <GoSearch className='text-white ml-2' />
+        <GoSearch onClick={searchHandler} className='text-white ml-2' />
         {dropdown && isFocused && (
           <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg'>
             {searchResult.slice(0, 5).map(movie => (
@@ -75,7 +85,11 @@ const Search: FC = () => {
               </Link>
             ))}
 
-            {searchResult.length > 5 && <button className='px-3 py-1.5 bg-accent w-full'>More results</button>}
+            {searchResult.length > 5 && (
+              <button onClick={searchHandler} className='px-3 py-1.5 bg-accent w-full'>
+                More results
+              </button>
+            )}
           </div>
         )}
       </div>
