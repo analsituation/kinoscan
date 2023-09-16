@@ -1,4 +1,4 @@
-import { IMovie } from '@/customTypes/movie'
+import { IMovie, IMovieShort } from '@/customTypes/movie'
 
 import Section from '../Section'
 import Card from '../Card'
@@ -33,7 +33,7 @@ const InTheaters = async () => {
 
   return (
     <Section title='В прокате' carousel movieCard>
-      {movies.map((movie: IMovie) => (
+      {movies.map((movie: IMovieShort) => (
         <Card entity={movie}></Card>
       ))}
     </Section>

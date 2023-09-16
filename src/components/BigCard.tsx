@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import Image from 'next/image'
 import { IoPlayOutline } from 'react-icons/io5'
 
@@ -11,16 +10,10 @@ interface BigCardProps {
   entity: IMovie | ITV | ICartoon
 }
 
-const BigCard: FC<BigCardProps> = ({ entity }) => {
-  let name: string
-  let description: string
-  let poster: string
-
-  if (entity) {
-    name = entity.name || entity.alternativeName || entity.enName
-    description = entity.description || 'No description...'
-    poster = entity.poster?.previewUrl || '/ks-stub.svg'
-  }
+const BigCard = ({ entity }: BigCardProps) => {
+  const name = entity.name || entity.alternativeName || entity.enName
+  const description = entity.description || 'No description...'
+  const poster = entity.poster?.previewUrl || '/ks-stub.svg'
 
   return (
     <div
