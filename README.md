@@ -1,4 +1,4 @@
-# Kinoscan app
+# Kinoscan app (in progress)
 
 ### This is a movie web-appllication which uses unofficial kinopoisk api.
 ### Despite this app provides some optimizations by using modern server components and streameing, it can be really slow becouse of slow api server, which sometimes responds within a few seconds.
