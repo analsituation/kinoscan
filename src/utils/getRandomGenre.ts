@@ -72,10 +72,6 @@ const kpGenresForShow: kpGenresType[] = [
     slug: 'melodrama'
   },
   {
-    name: 'мультфильм',
-    slug: 'multfilm'
-  },
-  {
     name: 'мюзикл',
     slug: 'myuzikl'
   }

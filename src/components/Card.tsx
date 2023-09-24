@@ -1,11 +1,11 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
-import { IMovieShort } from '@/customTypes/movie'
+import { IMovie, IMovieShort } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
 
 interface CardProps {
-  entity: IMovieShort | IPerson
+  entity: IMovieShort | IMovie | IPerson
 }
 
 const Card = ({ entity }: CardProps) => {

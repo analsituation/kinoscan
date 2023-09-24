@@ -65,21 +65,28 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
 
   return (
     <>
-      <div className='h-[350px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
+      <div className='h-[350px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
         <div className='backdrop-gradient'></div>
-        <Image alt={name} width={1200} height={350} src={tv.backdrop.url} className='mx-auto'></Image>
+        <Image
+          alt={name}
+          layout='fill'
+          objectFit='cover'
+          quality={100}
+          src={tv.backdrop.url}
+          className='mx-auto'
+        ></Image>
       </div>
-      <Section className='-mt-[150px] flex items-center relative z-1 mobile:block'>
+      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start relative z-1 sm:block'>
         <Image
           src={poster}
           alt={name}
           width={200}
           height={200}
-          className='w-[200px] min-w-[200px] h-[300px] mobile:mx-auto shadow-md'
+          className='w-[200px] min-w-[200px] h-[300px] shadow-md'
         ></Image>
-        <div className='px-3 flex flex-col items-start gap-5'>
-          <p className='text-2xl text-lightGrey line-clamp-1'>{name}</p>
-          <ul className='flex items-center gap-3'>
+        <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
+          <p className='text-3xl text-lightGrey sm:text-dark'>{name}</p>
+          <ul className='flex items-center gap-3 flex-wrap'>
             {tv.genres.map(genre => (
               <li
                 key={genre.name}
@@ -89,7 +96,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
               </li>
             ))}
           </ul>
-          <p className='line-clamp-3 opacity-[0.9]'>{description}</p>
+          <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
       <Section title='В ролях' hidden={cast.length === 0}>
@@ -110,21 +117,19 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
         ))}
       </Section>
       <Section title='Трейлеры' hidden={tv.videos.trailers.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-white'>
-          <div className='flex items-center gap-3 h-[300px]'>
-            {tv.videos.trailers.map((trailer, ind) => (
-              <a href={trailer.url} key={ind}>
-                <div className='cursor-pointer bg-darkGrey'>
-                  <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'></div>
-                </div>
-              </a>
+        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
+          <div className='flex items-center gap-3 h-[300px] mb-3'>
+            {tv.videos.trailers.map(trailer => (
+              <div>
+                <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
+              </div>
             ))}
           </div>
         </div>
       </Section>
 
       <Section title='Другие фильмы этой серии' hidden={tv.sequelsAndPrequels.length === 0}>
-        <div className=' overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-white'>
+        <div className=' overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
           <div className='flex items-start gap-3 h-[300px]'>
             {tv.sequelsAndPrequels.map(el => (
               <Card entity={el}></Card>
@@ -133,7 +138,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
         </div>
       </Section>
       <Section title='Похожее' hidden={tv.similarMovies.length === 0}>
-        <div className='overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-white'>
+        <div className='overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
           <div className='flex items-start gap-3 h-[300px]'>
             {tv.similarMovies.map(el => (
               <Card entity={el}></Card>

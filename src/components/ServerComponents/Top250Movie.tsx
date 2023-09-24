@@ -5,6 +5,7 @@ const getRandomTop250 = async () => {
   const number = Math.floor(Math.random() * (250 - 1) + 1)
   try {
     const url = process.env.API_URL! + `?isSeries=false&top250=${number}`
+    console.log(number)
     const api_key = process.env.API_KEY!
     const response = await fetch(url, {
       method: 'GET',
@@ -29,11 +30,9 @@ const getRandomTop250 = async () => {
 
 const RandomTop250 = async () => {
   const movie = await getRandomTop250()
-  console.log(movie)
-  console.log(typeof movie)
 
   return (
-    <Section title={`Случайный представитель Топ250`} carousel={false}>
+    <Section title={`Случайный фильм из Топ250`} carousel={false}>
       <BigCard entity={movie}></BigCard>
     </Section>
   )

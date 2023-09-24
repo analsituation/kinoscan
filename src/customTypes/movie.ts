@@ -14,7 +14,7 @@ export interface IMovie {
   rating: IRating
   votes: IVotes
   movieLength: number
-  poster: IPoster | null
+  poster: IPoster
   backdrop: IBackdrop
   genres: IGenre[]
   countries: ICountry[]

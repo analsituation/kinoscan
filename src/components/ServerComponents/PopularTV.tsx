@@ -1,7 +1,7 @@
 import { ITV } from '@/customTypes/TV'
 
 import Section from '../Section'
-import BigCard from '../BigCard'
+import Card from '../Card'
 
 const getPopularTV = async () => {
   try {
@@ -32,9 +32,9 @@ const PopularTV = async () => {
   const tvSeries = await getPopularTV()
 
   return (
-    <Section title='Популярные сериалы' carousel>
+    <Section title='Популярные сериалы' movieCard carousel>
       {tvSeries.map((tv: ITV) => (
-        <BigCard entity={tv}></BigCard>
+        <Card entity={tv}></Card>
       ))}
     </Section>
   )

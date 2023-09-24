@@ -1,7 +1,7 @@
-import { IMovieShort } from '@/customTypes/movie'
+import { IMovie } from '@/customTypes/movie'
 
 import Section from '../Section'
-import Card from '../Card'
+import BigCard from '../BigCard'
 
 const getFilmsInTheaters = async () => {
   try {
@@ -32,9 +32,9 @@ const InTheaters = async () => {
   const movies = await getFilmsInTheaters()
 
   return (
-    <Section title='В прокате' carousel movieCard>
-      {movies.map((movie: IMovieShort) => (
-        <Card entity={movie}></Card>
+    <Section title='В прокате' carousel>
+      {movies.map((movie: IMovie) => (
+        <BigCard entity={movie}></BigCard>
       ))}
     </Section>
   )

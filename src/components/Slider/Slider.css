@@ -8,12 +8,17 @@
   overflow: hidden;
 }
 
+.slick-prev::before,
+.slick-next::before {
+  font-size: 26px;
+}
+
 .slick-prev {
-  left: -25px;
-  z-index: 10;
+  left: 0;
+  z-index: 1;
 }
 
 .slick-next {
-  right: -25px;
-  z-index: 10;
+  right: 0;
+  z-index: 1;
 }

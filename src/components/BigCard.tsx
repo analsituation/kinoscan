@@ -30,9 +30,9 @@ const BigCard = ({ entity }: BigCardProps) => {
       }}
     >
       <div className='overlay-gradient'></div>
-      <Link href={`/${entity.type}/${entity.id}`}>
-        <div className='absolute left-0 top-0 bottom-0 w-[200px]'>
-          <Image src={photo!} alt={name!} layout='fill' />
+      <Link href={`/${entity?.type}/${entity?.id}`}>
+        <div className='absolute left-4 top-0 bottom-0 w-[200px]'>
+          <Image src={photo!} alt={name!} layout='fill' className='rounded-l-md' />
         </div>
         <div className='flex flex-col items-start justify-center pl-[200px] h-full gap-6'>
           <p className='text-xl'>{name}</p>

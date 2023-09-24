@@ -5,7 +5,6 @@ import TopRatedMovies from '@/components/ServerComponents/TopRatedMovies'
 const MoviesPage = () => {
   return (
     <>
-      <div className='h-[120px] left-0 right-0 top-0 bg-lightGrey'></div>
       <RandomTop250 />
       <PopularMovies />
       <TopRatedMovies />

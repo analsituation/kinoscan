@@ -1,9 +1,7 @@
 import Section from '../Section'
-import BigCard from '../BigCard'
 import { ICartoon } from '@/customTypes/cartoon'
 import { getRandomGenre } from '@/utils/getRandomGenre'
-import { genres } from '@/customTypes/genre'
-import { IMovie } from '@/customTypes/movie'
+import Card from '../Card'
 
 const getPopularFromGenre = async () => {
   const genre = getRandomGenre()
@@ -29,7 +27,6 @@ const getPopularFromGenre = async () => {
       genre,
       films: data.docs
     }
-    // return [genre, data.docs]
   } catch (error) {
     console.error('Ошибка:', error)
   }
@@ -45,9 +42,9 @@ const PopularFromGenre = async () => {
   const title = `Случайный жанр: «${data.genre[0].toUpperCase() + data.genre.slice(1)}»`
 
   return (
-    <Section title={title} carousel>
+    <Section title={title} movieCard carousel>
       {data.films.map((cartoon: ICartoon) => (
-        <BigCard entity={cartoon}></BigCard>
+        <Card entity={cartoon}></Card>
       ))}
     </Section>
   )

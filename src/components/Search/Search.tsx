@@ -40,7 +40,7 @@ const Search: FC = () => {
 
   return (
     <>
-      <div className='flex items-center relative '>
+      <div className='flex items-center relative min-w-[350px] sm:min-w-[150px] z-2'>
         <input
           onFocus={() => setIsFocused(true)}
           // KocTbIJIb
@@ -54,8 +54,9 @@ const Search: FC = () => {
           onChange={e => setQuery(e.target.value)}
         />
         <GoSearch onClick={searchHandler} className='text-white ml-2' />
+
         {dropdown && isFocused && (
-          <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg'>
+          <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'>
             {searchResult.slice(0, 5).map(movie => (
               <Link href={`/movies/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
                 <div className='flex items-center px-3 py-1.5 cursor-pointer'>
@@ -69,8 +70,8 @@ const Search: FC = () => {
                     />
                   </div>
                   <div className='px-3'>
-                    <p className='text-base mb-2'>{movie.name || movie.alternativeName || movie.enName}</p>
-                    <ul className='flex flex-wrap gap-x-3 text-sm'>
+                    <p className='text-base line-clamp-3 mb-2'>{movie.name || movie.alternativeName || movie.enName}</p>
+                    <ul className='flex flex-wrap gap-x-3 text-xs'>
                       {movie.genres.map(genre => (
                         <li
                           className='px-2 leading-6 mb-2 opacity-70 bg-accent rounded-md hover:opacity-90'

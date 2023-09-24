@@ -1,6 +1,6 @@
 import Section from '../Section'
-import BigCard from '../BigCard'
 import { ICartoon } from '@/customTypes/cartoon'
+import Card from '../Card'
 
 const getPopularCartoons = async () => {
   try {
@@ -31,9 +31,9 @@ const PopularCartoons = async () => {
   const cartoons = await getPopularCartoons()
 
   return (
-    <Section title='Популярные мультфильмы' carousel>
+    <Section title='Популярные мультфильмы' movieCard carousel>
       {cartoons.map((cartoon: ICartoon) => (
-        <BigCard entity={cartoon}></BigCard>
+        <Card entity={cartoon}></Card>
       ))}
     </Section>
   )

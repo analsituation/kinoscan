@@ -65,12 +65,18 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
 
   return (
     <>
-      {/* <TrailerModal onHide={() => setTrailerSrc('')} src={trailerSrc}></TrailerModal> */}
-      <div className='h-[350px] md:h-[200px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
+      <div className='h-[350px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
         <div className='backdrop-gradient'></div>
-        <Image alt={name} width={1200} height={350} src={movie.backdrop.url} className='mx-auto'></Image>
+        <Image
+          alt={name}
+          layout='fill'
+          objectFit='cover'
+          quality={100}
+          src={movie.backdrop.url}
+          className='mx-auto'
+        ></Image>
       </div>
-      <Section className='-mt-[150px] flex items-center relative z-1 sm:block'>
+      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start relative z-1 sm:block'>
         <Image
           src={poster}
           alt={name}
@@ -78,8 +84,8 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
           height={200}
           className='w-[200px] min-w-[200px] h-[300px] shadow-md'
         ></Image>
-        <div className='px-3 flex flex-col items-start gap-5 sm:mt-5'>
-          <p className='text-2xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
+        <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
+          <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
           <ul className='flex items-center gap-3 flex-wrap'>
             {movie.genres.map(genre => (
               <li
@@ -90,7 +96,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
               </li>
             ))}
           </ul>
-          <p className='sm:line-clamp-none line-clamp-4 opacity-[0.9]'>{description}</p>
+          <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
       <Section title='В ролях' hidden={cast.length === 0}>

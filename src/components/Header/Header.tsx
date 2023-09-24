@@ -13,7 +13,7 @@ const Header: FC = () => {
   const pathname = usePathname()
 
   return (
-    <div className='bg-dark text-lightGrey sticky top-0 z-2 overflow-hidden'>
+    <div className='bg-dark text-lightGrey sticky top-0 z-3'>
       <Container className='flex justify-between gap-3 md:gap-3 md:px-6'>
         <div className='flex items-center gap-6'>
           <h1 className='text-2xl text-accent font-semibold'>

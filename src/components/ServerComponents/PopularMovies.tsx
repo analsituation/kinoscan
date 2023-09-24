@@ -1,7 +1,7 @@
 import { IMovie } from '@/customTypes/movie'
 
 import Section from '../Section'
-import BigCard from '../BigCard'
+import Card from '../Card'
 
 const getPopularMovies = async () => {
   try {
@@ -32,9 +32,9 @@ const PopularMovies = async () => {
   const films = await getPopularMovies()
 
   return (
-    <Section title='Популярные фильмы' carousel>
+    <Section title='Популярные фильмы' movieCard carousel>
       {films.map((film: IMovie) => (
-        <BigCard entity={film}></BigCard>
+        <Card key={film.id} entity={film}></Card>
       ))}
     </Section>
   )
