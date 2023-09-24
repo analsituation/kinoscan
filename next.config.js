@@ -20,6 +20,11 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'imagetmdb.com',
         port: ''
+      },
+      {
+        protocol: 'https',
+        hostname: 'img.youtube.com',
+        port: ''
       }
     ]
   }

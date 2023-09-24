@@ -14,6 +14,9 @@ const config: Config = {
       screens: {
         md: {
           max: '768px'
+        },
+        sm: {
+          max: '576px'
         }
       },
       zIndex: {

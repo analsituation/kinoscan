@@ -40,14 +40,14 @@ const Search: FC = () => {
 
   return (
     <>
-      <div className='flex items-center relative'>
+      <div className='flex items-center relative '>
         <input
           onFocus={() => setIsFocused(true)}
           // KocTbIJIb
           onBlur={() => {
             setTimeout(() => setIsFocused(false), 100)
           }}
-          className='outline-0 bg-darkGrey px-3 min-w-[300px] py-1 rounded-sm'
+          className='outline-0 bg-darkGrey px-3 py-1 rounded-sm w-full'
           type='text'
           placeholder='Search'
           value={query}
