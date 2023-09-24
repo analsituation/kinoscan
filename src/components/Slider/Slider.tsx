@@ -21,6 +21,7 @@ const Slider = (props: SliderProps) => {
       infinite: false,
       slidesToShow: 6,
       slidesToScroll: 3,
+      draggable: true,
       swipe: false,
       responsive: [
         {

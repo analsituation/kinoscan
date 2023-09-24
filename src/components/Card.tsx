@@ -3,9 +3,11 @@ import Link from 'next/link'
 
 import { IMovie, IMovieShort } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
+import { ITV } from '@/customTypes/TV'
+import { placeholderImg } from '@/utils/base64Img'
 
 interface CardProps {
-  entity: IMovieShort | IMovie | IPerson
+  entity: IMovie | IMovieShort | ITV | IPerson
 }
 
 const Card = ({ entity }: CardProps) => {
@@ -21,14 +23,41 @@ const Card = ({ entity }: CardProps) => {
   }
 
   return (
-    <Link href={`/movies/${entity.id}`}>
-      <div className='cursor-pointer flex flex-col justify-start h-full mx-4 mb-3'>
-        <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'>
-          <Image className='shadow-inner rounded-lg' src={photo} alt={name} layout='fill' />
+    <>
+      {'profession' in entity ? (
+        <div draggable={false} className='cursor-pointer flex flex-col justify-start h-full mx-4 my-2'>
+          <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'>
+            <Image
+              placeholder={placeholderImg}
+              draggable={false}
+              className='shadow-inner rounded-lg'
+              src={photo}
+              alt={name}
+              fill
+              objectFit='cover'
+            />
+          </div>
+          <p className='py-1.5 w-[160px] line-clamp-2 mx-auto'>{name}</p>
         </div>
-        <p className='py-1.5 w-[160px] line-clamp-2 mx-auto'>{name}</p>
-      </div>
-    </Link>
+      ) : (
+        <Link draggable={false} href={`/${entity.type}/${entity.id}`}>
+          <div className='cursor-pointer flex flex-col mx-4 my-2'>
+            <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'>
+              <Image
+                placeholder={placeholderImg}
+                draggable={false}
+                className='shadow-inner rounded-lg'
+                src={photo}
+                alt={name}
+                fill
+                objectFit='cover'
+              />
+            </div>
+            <p className='py-1.5 line-clamp-2 min-h-[60px]'>{name}</p>
+          </div>
+        </Link>
+      )}
+    </>
   )
 }
 export default Card

@@ -5,6 +5,7 @@ import { IoPlayOutline } from 'react-icons/io5'
 import { ITV } from '@/customTypes/TV'
 import { IMovie } from '@/customTypes/movie'
 import { ICartoon } from '@/customTypes/cartoon'
+import { placeholderImg } from '@/utils/base64Img'
 
 interface BigCardProps {
   entity: IMovie | ITV | ICartoon
@@ -30,9 +31,17 @@ const BigCard = ({ entity }: BigCardProps) => {
       }}
     >
       <div className='overlay-gradient'></div>
-      <Link href={`/${entity?.type}/${entity?.id}`}>
+      <Link draggable={false} href={`/${entity?.type}/${entity?.id}`}>
         <div className='absolute left-4 top-0 bottom-0 w-[200px]'>
-          <Image src={photo!} alt={name!} layout='fill' className='rounded-l-md' />
+          <Image
+            placeholder={placeholderImg}
+            draggable={false}
+            src={photo!}
+            alt={name!}
+            height={300}
+            width={200}
+            className='rounded-l-md'
+          />
         </div>
         <div className='flex flex-col items-start justify-center pl-[200px] h-full gap-6'>
           <p className='text-xl'>{name}</p>

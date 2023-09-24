@@ -7,6 +7,8 @@ import Section from '@/components/Section'
 import { IPerson } from '@/customTypes/person'
 import { ITV } from '@/customTypes/TV'
 import clsx from 'clsx'
+import { placeholderImg } from '@/utils/base64Img'
+import ScrollbarProvider from '@/components/ScrollbarProvider'
 
 const getTvById = async (id: number) => {
   try {
@@ -65,19 +67,24 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
 
   return (
     <>
-      <div className='h-[350px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
+      <div className='h-[420px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
         <div className='backdrop-gradient'></div>
-        <Image
-          alt={name}
-          layout='fill'
-          objectFit='cover'
-          quality={100}
-          src={tv.backdrop.url}
-          className='mx-auto'
-        ></Image>
+        <div className='w-[50%] h-full mx-auto relative'>
+          <Image
+            placeholder={'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='}
+            quality={65}
+            alt={name}
+            layout='fill'
+            objectFit='cover'
+            src={tv.backdrop.url}
+            className='mx-auto'
+          ></Image>
+        </div>
       </div>
-      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start relative z-1 sm:block'>
+
+      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start gap-4 relative z-1 sm:block'>
         <Image
+          placeholder={placeholderImg}
           src={poster}
           alt={name}
           width={200}
@@ -99,52 +106,48 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
           <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
+
       <Section title='В ролях' hidden={cast.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3'>
-            {cast.map(actor => (
-              <Card key={actor.id} entity={actor}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {cast.map(actor => (
+            <Card entity={actor} key={actor.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
+
       <Section title='Сезоны' hidden={tv.seasonsInfo.length === 0}>
         {tv.seasonsInfo.slice(1).map((season, ind) => (
-          <div className={clsx('bg-lightGrey p-3 flex gap-[140px]', ind % 2 === 1 && 'bg-white')}>
+          <div key={season.number} className={clsx('bg-lightGrey p-3 flex gap-[140px]', ind % 2 === 1 && 'bg-white')}>
             <span className='w-[100px] inline-block'>Сезон {season.number}</span>
             <span className='inline-block'>{season.episodesCount} серий</span>
           </div>
         ))}
       </Section>
+
       <Section title='Трейлеры' hidden={tv.videos.trailers.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-center gap-3 h-[300px] mb-3'>
-            {tv.videos.trailers.map(trailer => (
-              <div>
-                <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {tv.videos.trailers.map((trailer, ind) => (
+            <div key={ind}>
+              <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
+            </div>
+          ))}
+        </ScrollbarProvider>
       </Section>
 
       <Section title='Другие фильмы этой серии' hidden={tv.sequelsAndPrequels.length === 0}>
-        <div className=' overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3 h-[300px]'>
-            {tv.sequelsAndPrequels.map(el => (
-              <Card entity={el}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {tv.sequelsAndPrequels.map(el => (
+            <Card entity={el} key={el.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
+
       <Section title='Похожее' hidden={tv.similarMovies.length === 0}>
-        <div className='overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3 h-[300px]'>
-            {tv.similarMovies.map(el => (
-              <Card entity={el}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {tv.similarMovies.map(el => (
+            <Card entity={el} key={el.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
     </>
   )

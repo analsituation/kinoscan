@@ -5,8 +5,8 @@ import Card from '@/components/Card'
 import Section from '@/components/Section'
 import { IPerson } from '@/customTypes/person'
 import { IMovie } from '@/customTypes/movie'
-import { getYoutubeId } from '@/utils/youtubeId'
-import { TrailerModal } from '@/components/Modal'
+import { placeholderImg } from '@/utils/base64Img'
+import ScrollbarProvider from '@/components/ScrollbarProvider'
 
 const getMovieById = async (id: number) => {
   try {
@@ -65,19 +65,24 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
 
   return (
     <>
-      <div className='h-[350px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
+      <div className='h-[420px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
         <div className='backdrop-gradient'></div>
-        <Image
-          alt={name}
-          layout='fill'
-          objectFit='cover'
-          quality={100}
-          src={movie.backdrop.url}
-          className='mx-auto'
-        ></Image>
+        <div className='w-[50%] h-full mx-auto relative'>
+          <Image
+            placeholder={'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='}
+            quality={65}
+            alt={name}
+            layout='fill'
+            objectFit='cover'
+            src={movie.backdrop.url}
+            className='mx-auto'
+          ></Image>
+        </div>
       </div>
-      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start relative z-1 sm:block'>
+
+      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start gap-4 relative z-1 sm:block'>
         <Image
+          placeholder={placeholderImg}
           src={poster}
           alt={name}
           width={200}
@@ -99,45 +104,39 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
           <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
+
       <Section title='В ролях' hidden={cast.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3'>
-            {cast.map(actor => (
-              <Card key={actor.id} entity={actor}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {cast.map(actor => (
+            <Card entity={actor} key={actor.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
 
       <Section title='Трейлеры' hidden={movie.videos.trailers.length === 0}>
-        <div className='overflow-x-scroll scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-center gap-3 h-[300px] mb-3'>
-            {movie.videos.trailers.map(trailer => (
-              <div>
-                <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider className='mb-6'>
+          {movie.videos.trailers.map((trailer, ind) => (
+            <div key={ind}>
+              <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
+            </div>
+          ))}
+        </ScrollbarProvider>
       </Section>
 
       <Section title='Другие фильмы этой серии' hidden={movie.sequelsAndPrequels.length === 0}>
-        <div className=' overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3 h-[300px]'>
-            {movie.sequelsAndPrequels.map(movie => (
-              <Card entity={movie}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {movie.sequelsAndPrequels.map(movie => (
+            <Card entity={movie} key={movie.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
+
       <Section title='Похожее' hidden={movie.similarMovies.length === 0}>
-        <div className='overflow-x-scroll overflow-y-hidden scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-          <div className='flex items-start gap-3 h-[300px]'>
-            {movie.similarMovies.map(movie => (
-              <Card entity={movie}></Card>
-            ))}
-          </div>
-        </div>
+        <ScrollbarProvider>
+          {movie.similarMovies.map(movie => (
+            <Card entity={movie} key={movie.id}></Card>
+          ))}
+        </ScrollbarProvider>
       </Section>
     </>
   )
