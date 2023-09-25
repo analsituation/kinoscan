@@ -7,6 +7,7 @@ import { IPerson } from '@/customTypes/person'
 import { IMovie } from '@/customTypes/movie'
 import { placeholderImg } from '@/utils/base64Img'
 import ScrollbarProvider from '@/components/ScrollbarProvider'
+import SkeletonCard from '@/components/SkeletonCard'
 
 const getMovieById = async (id: number) => {
   try {
@@ -27,6 +28,13 @@ const getMovieById = async (id: number) => {
     }
 
     const data = await response.json()
+
+    return new Promise(resolve => {
+      setTimeout(() => {
+        return resolve(data)
+      }, 3000)
+    })
+
     return data
   } catch (error) {
     console.error('Ошибка:', error)
@@ -86,7 +94,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
           src={poster}
           alt={name}
           width={200}
-          height={200}
+          height={300}
           className='w-[200px] min-w-[200px] h-[300px] shadow-md'
         ></Image>
         <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>

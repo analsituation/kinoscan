@@ -10,8 +10,9 @@ interface SectionProps {
   carousel?: boolean
   movieCard?: boolean
   className?: string
-  title?: string
+  title?: string | boolean
   hidden?: boolean
+  skeleton?: boolean
 }
 
 const Section: FC<PropsWithChildren<SectionProps>> = ({
@@ -20,12 +21,20 @@ const Section: FC<PropsWithChildren<SectionProps>> = ({
   carousel = false,
   movieCard,
   hidden,
+  skeleton = false,
   children
 }) => {
   if (hidden) return <></>
   return (
     <Container className={className}>
-      {title ? <h1 className={clsx('text-xl pl-10 py-4')}>{title}</h1> : ''}
+      {typeof title === 'string' ? (
+        <h1 className={clsx('text-xl pl-10 py-4', skeleton && 'ml-10 my-4 bg-lightGrey animate-pulse h-5 w-1/6')}>
+          {title}
+        </h1>
+      ) : (
+        ''
+      )}
+      {/* {skeleton && <div className='ml-10 my-4 bg-lightGrey animate-pulse h-5 w-1/6'></div>} */}
       {carousel ? <Slider movieCard={movieCard}>{children}</Slider> : <>{children}</>}
     </Container>
   )

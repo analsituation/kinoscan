@@ -115,6 +115,18 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
         </ScrollbarProvider>
       </Section>
 
+      <Section title='' skeleton>
+        {[...new Array(3)].map((season, ind) => (
+          <div
+            key={ind}
+            className={clsx('h-[48px] flex gap-[140px] bg-lightGrey animate-pulse', ind % 2 === 1 && 'bg-white')}
+          >
+            <span className='w-[100px] inline-block'></span>
+            <span className='inline-block'></span>
+          </div>
+        ))}
+      </Section>
+
       <Section title='Сезоны' hidden={tv.seasonsInfo.length === 0}>
         {tv.seasonsInfo.slice(1).map((season, ind) => (
           <div key={season.number} className={clsx('bg-lightGrey p-3 flex gap-[140px]', ind % 2 === 1 && 'bg-white')}>
