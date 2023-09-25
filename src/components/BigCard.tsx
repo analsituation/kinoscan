@@ -23,29 +23,23 @@ const BigCard = ({ entity }: BigCardProps) => {
   }
 
   return (
-    <div
-      className='h-[300px] w-[100%] mx-auto relative px-10'
-      style={{
-        boxSizing: 'border-box',
-        display: 'block'
-      }}
-    >
+    <div className='h-[300px] w-[100%] mx-auto relative px-10 sm:px-2'>
       <div className='overlay-gradient'></div>
       <Link draggable={false} href={`/${entity?.type}/${entity?.id}`}>
-        <div className='absolute left-4 top-0 bottom-0 w-[200px]'>
+        <div className='absolute left-4 top-0 bottom-0 w-[200px] sm:w-[180px]'>
           <Image
             placeholder={placeholderImg}
             draggable={false}
             src={photo!}
             alt={name!}
-            height={300}
-            width={200}
+            fill
+            style={{ objectFit: 'cover' }}
             className='rounded-l-md'
           />
         </div>
-        <div className='flex flex-col items-start justify-center pl-[200px] h-full gap-6'>
-          <p className='text-xl'>{name}</p>
-          <p className='text-sm max-w-[80%] line-clamp-5'>{description}</p>
+        <div className='flex flex-col items-start justify-center pl-[200px] h-full gap-3'>
+          <p className='text-xl sm:line-clamp-2'>{name}</p>
+          <p className='text-sm max-w-[80%] sm:w-[100%] line-clamp-[8]'>{description}</p>
           <button className='px-3 py-1.5 flex items-center gap-3 bg-accent rounded-md text-lightGrey opacity-80 hover:opacity-95'>
             <IoPlayOutline size={18} className='-mt-[2px]' />
             <span>Play</span>

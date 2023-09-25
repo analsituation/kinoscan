@@ -89,7 +89,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
           alt={name}
           width={200}
           height={200}
-          className='w-[200px] min-w-[200px] h-[300px] shadow-md'
+          className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
         ></Image>
         <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
           <p className='text-3xl text-lightGrey sm:text-dark'>{name}</p>
@@ -113,18 +113,6 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
             <Card entity={actor} key={actor.id}></Card>
           ))}
         </ScrollbarProvider>
-      </Section>
-
-      <Section title='' skeleton>
-        {[...new Array(3)].map((season, ind) => (
-          <div
-            key={ind}
-            className={clsx('h-[48px] flex gap-[140px] bg-lightGrey animate-pulse', ind % 2 === 1 && 'bg-white')}
-          >
-            <span className='w-[100px] inline-block'></span>
-            <span className='inline-block'></span>
-          </div>
-        ))}
       </Section>
 
       <Section title='Сезоны' hidden={tv.seasonsInfo.length === 0}>

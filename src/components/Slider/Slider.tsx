@@ -21,8 +21,6 @@ const Slider = (props: SliderProps) => {
       infinite: false,
       slidesToShow: 6,
       slidesToScroll: 3,
-      draggable: true,
-      swipe: false,
       responsive: [
         {
           breakpoint: 1200,
@@ -41,15 +39,13 @@ const Slider = (props: SliderProps) => {
         {
           breakpoint: 768,
           settings: {
-            slidesToShow: 3,
-            slidesToScroll: 2
+            slidesToShow: 3
           }
         },
         {
           breakpoint: 576,
           settings: {
-            slidesToShow: 2,
-            slidesToScroll: 1
+            slidesToShow: 2
           }
         }
       ]
@@ -57,7 +53,7 @@ const Slider = (props: SliderProps) => {
   }
 
   return (
-    <Slick {...settings} autoplay={false} autoplaySpeed={5000}>
+    <Slick {...settings} autoplay={false}>
       {props.children}
     </Slick>
   )

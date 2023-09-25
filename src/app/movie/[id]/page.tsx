@@ -95,7 +95,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
           alt={name}
           width={200}
           height={300}
-          className='w-[200px] min-w-[200px] h-[300px] shadow-md'
+          className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
         ></Image>
         <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
           <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
