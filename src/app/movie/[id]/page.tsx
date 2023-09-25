@@ -73,7 +73,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
             quality={65}
             alt={name}
             layout='fill'
-            objectFit='cover'
+            style={{ objectFit: 'cover' }}
             src={movie.backdrop.url}
             className='mx-auto'
           ></Image>

@@ -75,7 +75,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
             quality={65}
             alt={name}
             layout='fill'
-            objectFit='cover'
+            style={{ objectFit: 'cover' }}
             src={tv.backdrop.url}
             className='mx-auto'
           ></Image>

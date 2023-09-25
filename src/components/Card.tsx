@@ -34,7 +34,7 @@ const Card = ({ entity }: CardProps) => {
               src={photo}
               alt={name}
               fill
-              objectFit='cover'
+              style={{ objectFit: 'cover' }}
             />
           </div>
           <p className='py-1.5 w-[160px] line-clamp-2 mx-auto'>{name}</p>
@@ -50,7 +50,7 @@ const Card = ({ entity }: CardProps) => {
                 src={photo}
                 alt={name}
                 fill
-                objectFit='cover'
+                style={{ objectFit: 'cover' }}
               />
             </div>
             <p className='py-1.5 line-clamp-2 min-h-[60px]'>{name}</p>

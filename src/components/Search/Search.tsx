@@ -1,15 +1,15 @@
 'use client'
 
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { GoSearch } from 'react-icons/go'
 
 import { searchFilms } from '@/api/api'
 import { useDebounce } from '@/hooks/debounce'
 
 import { IMovie } from '@/customTypes/movie'
-import Link from 'next/link'
 
 const Search: FC = () => {
   const [isFocused, setIsFocused] = useState(false)
@@ -32,6 +32,7 @@ const Search: FC = () => {
   }, [debounced])
 
   const searchHandler = () => {
+    console.log('click')
     if (query.length) {
       setQuery('')
       router.push(`/search?query=${query}`)
@@ -58,7 +59,7 @@ const Search: FC = () => {
         {dropdown && isFocused && (
           <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'>
             {searchResult.slice(0, 5).map(movie => (
-              <Link href={`/movies/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
+              <Link href={`/${movie.type}/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
                 <div className='flex items-center px-3 py-1.5 cursor-pointer'>
                   <div className='bg-accent min-w-[68px] h-[102px] rounded-sm'>
                     <Image
