@@ -3,10 +3,10 @@ import { Metadata } from 'next'
 
 import Card from '@/components/Card'
 import Section from '@/components/Section'
+import ScrollbarProvider from '@/components/ScrollbarProvider'
 import { IPerson } from '@/customTypes/person'
 import { IMovie } from '@/customTypes/movie'
 import { placeholderImg } from '@/utils/base64Img'
-import ScrollbarProvider from '@/components/ScrollbarProvider'
 
 const getMovieById = async (id: number) => {
   try {

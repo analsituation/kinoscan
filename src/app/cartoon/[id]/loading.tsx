@@ -1,7 +1,6 @@
-import { FC } from 'react'
-
 import SkeletonCard from '@/components/SkeletonCard'
 import Section from '@/components/Section'
+import { FC } from 'react'
 
 const loading: FC = () => {
   return (

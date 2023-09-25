@@ -5,7 +5,6 @@ const getRandomTop250 = async () => {
   const number = Math.floor(Math.random() * (250 - 1) + 1)
   try {
     const url = process.env.API_URL! + `?isSeries=false&top250=${number}`
-    console.log(number)
     const api_key = process.env.API_KEY!
     const response = await fetch(url, {
       method: 'GET',
