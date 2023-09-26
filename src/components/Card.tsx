@@ -5,9 +5,10 @@ import { IMovie, IMovieShort } from '@/customTypes/movie'
 import { IPerson } from '@/customTypes/person'
 import { ITV } from '@/customTypes/TV'
 import { placeholderImg } from '@/utils/base64Img'
+import { ICartoon } from '@/customTypes/cartoon'
 
 interface CardProps {
-  entity: IMovie | IMovieShort | ITV | IPerson
+  entity: IMovie | IMovieShort | ITV | ICartoon | IPerson
 }
 
 const Card = ({ entity }: CardProps) => {
@@ -19,7 +20,7 @@ const Card = ({ entity }: CardProps) => {
     photo = entity.photo || '/ks-stub.svg'
   } else {
     name = entity.name || entity.alternativeName || entity.enName
-    photo = entity.poster.previewUrl || '/ks-stub.svg'
+    photo = entity?.poster?.previewUrl || '/ks-stub.svg'
   }
 
   return (
@@ -53,7 +54,7 @@ const Card = ({ entity }: CardProps) => {
                 style={{ objectFit: 'cover' }}
               />
             </div>
-            <p className='py-1.5 line-clamp-2 min-h-[60px]'>{name}</p>
+            <p className='py-1.5 w-[160px] mx-auto line-clamp-2 min-h-[60px]'>{name}</p>
           </div>
         </Link>
       )}

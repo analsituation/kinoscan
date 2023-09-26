@@ -1,7 +1,8 @@
-import { ITV } from '@/customTypes/TV'
+import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import BigCard from '../BigCard'
+import { ITV } from '@/customTypes/TV'
 
 const getPopularAnimatedTV = async () => {
   try {
@@ -22,6 +23,9 @@ const getPopularAnimatedTV = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -30,6 +34,9 @@ const getPopularAnimatedTV = async () => {
 
 const PopularAnimatedTV = async () => {
   const tvSeries = await getPopularAnimatedTV()
+  if (!tvSeries) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='Популярные мультсериалы' carousel>

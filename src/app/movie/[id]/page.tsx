@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { Metadata } from 'next'
 
@@ -27,7 +28,10 @@ const getMovieById = async (id: number) => {
     }
 
     const data = await response.json()
-    return data
+    if (data.statusCode === 403) {
+      return undefined
+    }
+    return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
   }
@@ -41,6 +45,10 @@ type MoviePageProps = {
 
 export async function generateMetadata({ params: { id } }: MoviePageProps): Promise<Metadata> {
   const movie: IMovie = await getMovieById(+id)
+  if (!movie) {
+    redirect('/api-info')
+  }
+
   return {
     title: movie.name
   }
@@ -48,6 +56,9 @@ export async function generateMetadata({ params: { id } }: MoviePageProps): Prom
 
 const MoviePage = async ({ params: { id } }: MoviePageProps) => {
   const movie: IMovie = await getMovieById(+id)
+  if (!movie) {
+    redirect('/api-info')
+  }
 
   const name = movie.name || movie.alternativeName || movie.enName
   const description = movie.description || 'No description...'

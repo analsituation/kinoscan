@@ -1,8 +1,8 @@
 'use client'
 
-import { FC, useEffect, useState } from 'react'
+import { FC, Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { redirect, useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { GoSearch } from 'react-icons/go'
 
@@ -18,21 +18,27 @@ const Search: FC = () => {
   const router = useRouter()
 
   const [query, setQuery] = useState('')
-  const [searchResult, setSearchResult] = useState<IMovie[]>([])
+  const [searchResult, setSearchResult] = useState<IMovie[] | string>([])
 
   const debounced = useDebounce<string>(query, 400)
 
   useEffect(() => {
     if (debounced.length >= 3) {
       setDropdown(true)
-      searchFilms(query).then(setSearchResult)
+      searchFilms(query).then(data => {
+        if (!data) {
+          router.push('/api-info')
+          setDropdown(false)
+        } else {
+          setSearchResult(data)
+        }
+      })
     } else {
       setDropdown(false)
     }
   }, [debounced])
 
   const searchHandler = () => {
-    console.log('click')
     if (query.length) {
       setQuery('')
       router.push(`/search?query=${query}`)
@@ -58,40 +64,49 @@ const Search: FC = () => {
 
         {dropdown && isFocused && (
           <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'>
-            {searchResult.slice(0, 5).map(movie => (
-              <Link href={`/${movie.type}/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
-                <div className='flex items-center px-3 py-1.5 cursor-pointer'>
-                  <div className='bg-accent min-w-[68px] h-[102px] rounded-sm'>
-                    <Image
-                      width={68}
-                      height={102}
-                      src={movie.poster?.previewUrl || '/ks-stub.svg'}
-                      alt={movie.name || movie.alternativeName || movie.enName}
-                      className='w-full h-full'
-                    />
-                  </div>
-                  <div className='px-3'>
-                    <p className='text-base line-clamp-3 mb-2'>{movie.name || movie.alternativeName || movie.enName}</p>
-                    <ul className='flex flex-wrap gap-x-3 text-xs'>
-                      {movie.genres.map(genre => (
-                        <li
-                          className='px-2 leading-6 mb-2 opacity-70 bg-accent rounded-md hover:opacity-90'
-                          key={genre.name}
-                        >
-                          {genre.name}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Link>
-            ))}
+            <div className='relative pb-9'>
+              {/* Search result */}
+              <div className='overflow-y-scroll max-h-[500px] scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
+                {Array.isArray(searchResult) &&
+                  searchResult.slice(0, 5).map(movie => (
+                    <Link href={`/${movie.type}/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
+                      <div className='flex items-start gap-3 px-2 py-3 cursor-pointer'>
+                        <div className='relative min-w-[80px] h-[120px] rounded-sm'>
+                          <div className='bg-lightGrey animate-pulse absolute top-0 left-0 right-0 bottom-0 z-0'></div>
+                          <Image
+                            width={80}
+                            height={120}
+                            src={movie.poster?.previewUrl || '/ks-stub.svg'}
+                            alt={movie.name || movie.alternativeName || movie.enName}
+                            className='w-full h-full relative z-1'
+                          />
+                        </div>
+                        <div>
+                          <p className='text-base line-clamp-2 mb-2'>
+                            {movie.name || movie.alternativeName || movie.enName}
+                          </p>
+                          <ul className='flex flex-wrap gap-x-2 text-xs'>
+                            {movie.genres.map(genre => (
+                              <li
+                                className='px-2 leading-6 mb-2 opacity-70 bg-accent rounded-md hover:opacity-90'
+                                key={genre.name}
+                              >
+                                {genre.name}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+              </div>
 
-            {searchResult.length > 5 && (
-              <button onClick={searchHandler} className='px-3 py-1.5 bg-accent w-full'>
-                More results
-              </button>
-            )}
+              {searchResult.length > 5 && (
+                <button onClick={searchHandler} className='px-3 py-1.5 bg-accent absolute bottom-0 left-0 right-0'>
+                  More results
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

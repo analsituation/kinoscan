@@ -21,6 +21,9 @@ export const searchFilms = async (query: string) => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)

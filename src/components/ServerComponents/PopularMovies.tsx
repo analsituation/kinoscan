@@ -1,7 +1,8 @@
-import { IMovie } from '@/customTypes/movie'
+import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
+import { IMovie } from '@/customTypes/movie'
 
 const getPopularMovies = async () => {
   try {
@@ -22,6 +23,9 @@ const getPopularMovies = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -30,6 +34,9 @@ const getPopularMovies = async () => {
 
 const PopularMovies = async () => {
   const films = await getPopularMovies()
+  if (!films) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='Популярные фильмы' movieCard carousel>

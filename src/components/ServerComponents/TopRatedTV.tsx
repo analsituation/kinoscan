@@ -1,7 +1,8 @@
-import { ITV } from '@/customTypes/TV'
+import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
+import { ITV } from '@/customTypes/TV'
 
 const getTopRatedTVs = async () => {
   try {
@@ -22,6 +23,9 @@ const getTopRatedTVs = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -30,6 +34,9 @@ const getTopRatedTVs = async () => {
 
 const TopRatedTV = async () => {
   const tvs = await getTopRatedTVs()
+  if (!tvs) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='Сериалы с наивысшим рейтингом' movieCard carousel>

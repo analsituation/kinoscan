@@ -1,7 +1,8 @@
-import { IMovie } from '@/customTypes/movie'
+import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import BigCard from '../BigCard'
+import { IMovie } from '@/customTypes/movie'
 
 const getFilmsInTheaters = async () => {
   try {
@@ -22,6 +23,9 @@ const getFilmsInTheaters = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -30,6 +34,9 @@ const getFilmsInTheaters = async () => {
 
 const InTheaters = async () => {
   const movies = await getFilmsInTheaters()
+  if (!movies) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='В прокате' carousel>

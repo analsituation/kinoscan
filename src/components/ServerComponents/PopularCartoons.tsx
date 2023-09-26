@@ -1,6 +1,8 @@
+import { redirect } from 'next/navigation'
+
 import Section from '../Section'
-import { ICartoon } from '@/customTypes/cartoon'
 import Card from '../Card'
+import { ICartoon } from '@/customTypes/cartoon'
 
 const getPopularCartoons = async () => {
   try {
@@ -21,6 +23,9 @@ const getPopularCartoons = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -29,6 +34,9 @@ const getPopularCartoons = async () => {
 
 const PopularCartoons = async () => {
   const cartoons = await getPopularCartoons()
+  if (!cartoons) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='Популярные мультфильмы' movieCard carousel>

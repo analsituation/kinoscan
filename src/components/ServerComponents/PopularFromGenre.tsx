@@ -1,7 +1,9 @@
+import { redirect } from 'next/navigation'
+
 import Section from '../Section'
+import Card from '../Card'
 import { ICartoon } from '@/customTypes/cartoon'
 import { getRandomGenre } from '@/utils/getRandomGenre'
-import Card from '../Card'
 
 const getPopularFromGenre = async () => {
   const genre = getRandomGenre()
@@ -23,6 +25,9 @@ const getPopularFromGenre = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return {
       genre,
       films: data.docs
@@ -34,9 +39,8 @@ const getPopularFromGenre = async () => {
 
 const PopularFromGenre = async () => {
   const data = await getPopularFromGenre()
-
   if (!data) {
-    return <div>Не удалось загрузить данные</div>
+    redirect('/api-info')
   }
 
   const title = `Случайный жанр: «${data.genre[0].toUpperCase() + data.genre.slice(1)}»`

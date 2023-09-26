@@ -1,6 +1,6 @@
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { Metadata } from 'next'
-import { IoIosArrowForward } from 'react-icons/io'
 
 import Card from '@/components/Card'
 import Section from '@/components/Section'
@@ -29,6 +29,9 @@ const getTvById = async (id: number) => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data
   } catch (error) {
     console.error('Ошибка:', error)
@@ -42,14 +45,22 @@ type TVPageProps = {
 }
 
 export async function generateMetadata({ params: { id } }: TVPageProps): Promise<Metadata> {
-  const movie: ITV = await getTvById(+id)
+  const tv: ITV = await getTvById(+id)
+  if (!tv) {
+    redirect('/api-info')
+  }
+
   return {
-    title: movie.name
+    title: tv.name
   }
 }
 
 const TVPage = async ({ params: { id } }: TVPageProps) => {
   const tv: ITV = await getTvById(+id)
+
+  if (!tv) {
+    redirect('/api-info')
+  }
 
   const name = tv.name || tv.alternativeName || tv.enName
   const description = tv.description || 'No description...'

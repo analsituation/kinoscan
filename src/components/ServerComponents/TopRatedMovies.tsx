@@ -1,7 +1,8 @@
-import { IMovie } from '@/customTypes/movie'
+import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
+import { IMovie } from '@/customTypes/movie'
 
 const getTopRatedFilms = async () => {
   try {
@@ -22,6 +23,9 @@ const getTopRatedFilms = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs
   } catch (error) {
     console.error('Ошибка:', error)
@@ -30,6 +34,9 @@ const getTopRatedFilms = async () => {
 
 const TopRatedMovies = async () => {
   const films = await getTopRatedFilms()
+  if (!films) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title='Фильмы с наивысшим рейтингом' movieCard carousel>

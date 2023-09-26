@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation'
+
 import Section from '../Section'
 import BigCard from '../BigCard'
 
@@ -21,6 +23,9 @@ const getRandomTop250 = async () => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data.docs[0]
   } catch (error) {
     console.error('Ошибка:', error)
@@ -29,6 +34,9 @@ const getRandomTop250 = async () => {
 
 const RandomTop250 = async () => {
   const movie = await getRandomTop250()
+  if (!movie) {
+    redirect('/api-info')
+  }
 
   return (
     <Section title={`Случайный фильм из Топ250`} carousel={false}>

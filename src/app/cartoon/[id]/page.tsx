@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { Metadata } from 'next'
 
@@ -7,6 +8,7 @@ import ScrollbarProvider from '@/components/ScrollbarProvider'
 import { IPerson } from '@/customTypes/person'
 import { IMovie } from '@/customTypes/movie'
 import { placeholderImg } from '@/utils/base64Img'
+import { ICartoon } from '@/customTypes/cartoon'
 
 const getMovieById = async (id: number) => {
   try {
@@ -27,6 +29,9 @@ const getMovieById = async (id: number) => {
     }
 
     const data = await response.json()
+    if (data.statusCode === 403) {
+      return undefined
+    }
     return data
   } catch (error) {
     console.error('Ошибка:', error)
@@ -40,23 +45,30 @@ type MoviePageProps = {
 }
 
 export async function generateMetadata({ params: { id } }: MoviePageProps): Promise<Metadata> {
-  const movie: IMovie = await getMovieById(+id)
+  const cartoon: ICartoon = await getMovieById(+id)
+
+  if (!cartoon) {
+    redirect('/api-info')
+  }
   return {
-    title: movie.name
+    title: cartoon.name
   }
 }
 
 const MoviePage = async ({ params: { id } }: MoviePageProps) => {
-  const movie: IMovie = await getMovieById(+id)
+  const cartoon: ICartoon = await getMovieById(+id)
+  if (!cartoon) {
+    redirect('/api-info')
+  }
 
-  const name = movie.name || movie.alternativeName || movie.enName
-  const description = movie.description || 'No description...'
-  const poster = movie.poster?.previewUrl || '/ks-stub.svg'
+  const name = cartoon.name || cartoon.alternativeName || cartoon.enName
+  const description = cartoon.description || 'No description...'
+  const poster = cartoon.poster?.previewUrl || '/ks-stub.svg'
 
   const castIdSet = new Set<number>()
   const cast: IPerson[] = []
 
-  movie.persons.forEach(person => {
+  cartoon.persons.forEach(person => {
     if (!castIdSet.has(person.id) && person.profession === 'актеры') {
       castIdSet.add(person.id)
       cast.push(person)
@@ -74,7 +86,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
             alt={name}
             layout='fill'
             style={{ objectFit: 'cover' }}
-            src={movie.backdrop.url}
+            src={cartoon.backdrop.url}
             className='mx-auto'
           ></Image>
         </div>
@@ -92,7 +104,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
           <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
           <ul className='flex items-center gap-3 flex-wrap'>
-            {movie.genres.map(genre => (
+            {cartoon.genres.map(genre => (
               <li
                 key={genre.name}
                 className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
@@ -113,9 +125,9 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Трейлеры' hidden={movie.videos.trailers.length === 0}>
+      <Section title='Трейлеры' hidden={cartoon.videos.trailers.length === 0}>
         <ScrollbarProvider className='mb-6'>
-          {movie.videos.trailers.map((trailer, ind) => (
+          {cartoon.videos.trailers.map((trailer, ind) => (
             <div key={ind}>
               <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
             </div>
@@ -123,17 +135,17 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Другие фильмы этой серии' hidden={movie.sequelsAndPrequels.length === 0}>
+      <Section title='Другие фильмы этой серии' hidden={cartoon.sequelsAndPrequels.length === 0}>
         <ScrollbarProvider>
-          {movie.sequelsAndPrequels.map(movie => (
+          {cartoon.sequelsAndPrequels.map(movie => (
             <Card entity={movie} key={movie.id}></Card>
           ))}
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Похожее' hidden={movie.similarMovies.length === 0}>
+      <Section title='Похожее' hidden={cartoon.similarMovies.length === 0}>
         <ScrollbarProvider>
-          {movie.similarMovies.map(movie => (
+          {cartoon.similarMovies.map(movie => (
             <Card entity={movie} key={movie.id}></Card>
           ))}
         </ScrollbarProvider>
