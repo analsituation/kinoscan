@@ -1,5 +1,10 @@
 'use server'
-export const searchFilms = async (query: string) => {
+
+import { IMovie } from '@/customTypes'
+
+export const searchFilms = async (
+  query: string
+): Promise<{ data: IMovie[]; total: number } | 403 | 524 | undefined> => {
   try {
     const searchByNameUrl = process.env.API_URL! + `?name=${query}`
     const searchByEnNameUrl = process.env.API_URL! + `?enName=${query}`
@@ -12,7 +17,7 @@ export const searchFilms = async (query: string) => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 0
+        revalidate: 86400
       },
       signal: AbortSignal.timeout(6000)
     })
@@ -27,14 +32,17 @@ export const searchFilms = async (query: string) => {
 
     if (response.ok) {
       const data = await response.json()
-      return data.docs
+      return {
+        data: data.docs,
+        total: data.total
+      }
     }
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === 'TimeoutError' || error.name === 'AbortError') {
         return 524
       }
-    } else return error
+    } else return
   }
 }
 
@@ -48,7 +56,7 @@ export const dataFetchWithId = async (id: number) => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 0
+        revalidate: 86400
       },
       signal: AbortSignal.timeout(8000)
     })
@@ -84,7 +92,7 @@ export const dataFetch = async (query: string) => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 0
+        revalidate: 86400
       },
       signal: AbortSignal.timeout(10000)
     })

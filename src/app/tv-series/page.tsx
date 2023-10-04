@@ -6,8 +6,8 @@ const TVPage = () => {
   return (
     <>
       <RandomTop250TV />
-      <PopularTV />
-      <TopRatedTV />
+      {/* <PopularTV />
+      <TopRatedTV /> */}
     </>
   )
 }

@@ -11,9 +11,15 @@ import { useDebounce } from '@/hooks/debounce'
 import { IMovie } from '@/customTypes'
 
 const Search: FC = () => {
+  const initialState = {
+    data: [],
+    total: NaN
+  }
+
   const [dropdownOpened, setDropdownOpened] = useState(false)
   const [query, setQuery] = useState('')
-  const [searchResult, setSearchResult] = useState<IMovie[]>([])
+  const [timeout, setTimeout] = useState(false)
+  const [searchResult, setSearchResult] = useState<{ data: IMovie[]; total: number }>(initialState)
 
   const dropdownRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -22,31 +28,37 @@ const Search: FC = () => {
 
   const debounced = useDebounce<string>(query, 200)
 
-  useEffect(() => {
-    if (debounced.length >= 3) {
-      setDropdownOpened(true)
-      searchFilms(query).then(data => {
+  const fetchSearch = () => {
+    console.log('1')
+    searchFilms(query).then(data => {
+      if (data) {
         switch (data) {
           case 403:
             router.push('/api-info')
             setDropdownOpened(false)
             break
-          // case 524:
-          //   a che bi tyt mozhno vidumat...
-          //   setDropdownOpened(false)
-          //   break;
+          case 524:
+            setTimeout(true)
+            break
           default:
             setSearchResult(data)
             break
         }
-      })
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (debounced.length >= 3) {
+      setDropdownOpened(true)
+      fetchSearch()
     } else {
       setDropdownOpened(false)
     }
   }, [debounced])
 
   useEffect(() => {
-    setDropdownOpened(false)
+    setSearchResult(initialState)
   }, [query])
 
   useEffect(() => {
@@ -88,14 +100,12 @@ const Search: FC = () => {
         <GoSearch onClick={searchHandler} className='text-white ml-2' />
 
         {!!dropdownOpened && (
-          <div
-            ref={dropdownRef}
-            className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'
-          >
-            {!!searchResult.length && (
-              <div className='relative pb-9'>
+          <div ref={dropdownRef} className='absolute top-10 left-0 right-0 rounded-md bg-darkGrey shadow-lg z-2'>
+            {/* Вывод результатов поиска */}
+            {!!searchResult.total && (
+              <div className='relative'>
                 <div className='overflow-y-scroll max-h-[500px] scrollbar scrollbar-thumb-accent scrollbar-track-darkGrey'>
-                  {searchResult.slice(0, 5).map(movie => (
+                  {searchResult.data.slice(0, 5).map(movie => (
                     <Link
                       onClick={() => {
                         setDropdownOpened(false)
@@ -136,15 +146,34 @@ const Search: FC = () => {
                   ))}
                 </div>
 
-                {searchResult.length > 5 && (
-                  <button onClick={searchHandler} className='px-3 py-1.5 bg-accent absolute bottom-0 left-0 right-0'>
+                {searchResult.total > 5 && (
+                  <button
+                    onClick={searchHandler}
+                    className='px-3 py-1.5 bg-accent absolute -bottom-8 left-0 right-0 rounded-br-md rounded-bl-md'
+                  >
                     More results
                   </button>
                 )}
               </div>
             )}
-            {searchResult.length === 0 && (
+            {/* если результатов нет, выводится сообщение, а если запрос превысил время ожидания,
+            то выводится соответствующий контент */}
+            {searchResult.total === 0 && (
               <div className='relative px-3 py-2'>Ничего не найдено по запросу "{query}"</div>
+            )}
+            {timeout && (
+              <div className='px-3 py-2 pb-6 text-center'>
+                <p>Превышено время ожидания от сервера</p>
+                <button
+                  onClick={() => {
+                    setTimeout(false)
+                    fetchSearch()
+                  }}
+                  className='px-3 py-1.5 bg-accent text-white rounded-md mt-4'
+                >
+                  Повторный поиск
+                </button>
+              </div>
             )}
           </div>
         )}

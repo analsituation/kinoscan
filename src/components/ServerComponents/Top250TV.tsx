@@ -21,7 +21,7 @@ const getRandomTop250TV = async () => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 0
+        revalidate: 60
       },
       signal: AbortSignal.timeout(10000)
     })

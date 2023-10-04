@@ -6,8 +6,8 @@ const MoviesPage = () => {
   return (
     <>
       <RandomTop250 />
-      <PopularMovies />
-      <TopRatedMovies />
+      {/* <PopularMovies />
+      <TopRatedMovies /> */}
     </>
   )
 }

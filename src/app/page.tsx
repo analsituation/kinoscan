@@ -7,11 +7,11 @@ import PopularTV from '@/components/ServerComponents/PopularTV'
 export default function Home() {
   return (
     <>
-      <InTheaters />
+      {/* <InTheaters />
       <PopularMovies />
       <PopularTV />
       <PopularCartoons />
-      <PopularFromGenre />
+      <PopularFromGenre /> */}
     </>
   )
 }

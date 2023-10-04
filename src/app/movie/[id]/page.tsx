@@ -9,8 +9,8 @@ import Top250Element from '@/components/UI/Top250Element'
 import RefreshPageComponent from '@/components/UI/RefreshPage'
 import { ICountry, IMovie, IPerson, unwantedStatusCodes } from '@/customTypes'
 import { placeholderImg } from '@/utils/base64Img'
-import { dataFetchWithId } from '@/api/api'
 import { minsToHours } from '@/utils/minsToHours'
+import { dataFetchWithId } from '@/api/api'
 
 type MoviePageProps = {
   params: {
