@@ -1,32 +1,56 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { redirect, useRouter, useSearchParams } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 
-import { searchFilms } from '@/api/api'
 import Section from '@/components/Section'
 import Card from '@/components/Card'
-import { IMovieShort } from '@/customTypes'
+import RefreshPageComponent from '@/components/UI/RefreshPage'
+import { IMovie, IMovieShort } from '@/customTypes'
+import { searchFilms } from '@/api/api'
 
 const SearchPage: FC = () => {
-  const [searchResult, setSearchResult] = useState<IMovieShort[]>([])
+  const initialState = {
+    data: [],
+    total: NaN
+  }
+
+  const [searchResult, setSearchResult] = useState<{ data: IMovie[]; total: number }>(initialState)
 
   const searchParams = useSearchParams()
   const router = useRouter()
 
   const query = searchParams.get('query')
 
+  const fetchSearch = () => {
+    if (query)
+      searchFilms(query).then(data => {
+        if (data) {
+          switch (data) {
+            case 403:
+              router.push('/api-info')
+              break
+            case 524:
+              return <RefreshPageComponent />
+            default:
+              setSearchResult(data)
+              break
+          }
+        }
+      })
+  }
+
   useEffect(() => {
     if (query?.trim()) {
       searchFilms(query).then(data => {
-        if (!data) {
-          router.push('/api-info')
-        } else {
-          setSearchResult(data)
-        }
+        fetchSearch()
       })
     }
   }, [query])
+
+  if (!query) {
+    redirect('/')
+  }
 
   return (
     <>
@@ -38,7 +62,8 @@ const SearchPage: FC = () => {
             justifyItems: 'start'
           }}
         >
-          {searchResult && searchResult.map((movie: IMovieShort) => <Card key={movie.id} entity={movie}></Card>)}
+          {!!searchResult.total &&
+            searchResult.data.map((movie: IMovieShort) => <Card key={movie.id} entity={movie}></Card>)}
         </div>
       </Section>
     </>

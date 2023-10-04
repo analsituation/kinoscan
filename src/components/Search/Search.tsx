@@ -29,7 +29,6 @@ const Search: FC = () => {
   const debounced = useDebounce<string>(query, 200)
 
   const fetchSearch = () => {
-    console.log('1')
     searchFilms(query).then(data => {
       if (data) {
         switch (data) {
