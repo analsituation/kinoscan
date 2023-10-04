@@ -22,9 +22,13 @@ export interface IMovie {
   sequelsAndPrequels: IMovieShort[]
   similarMovies: IMovieShort[]
   logo: ILogo
-  videos: {
-    trailers: ITrailer[]
-  }
+  top250: number | null
+  isSeries: false
+  videos:
+    | {
+        trailers: ITrailer[]
+      }
+    | undefined
 }
 
 export interface IMovieShort {
@@ -79,7 +83,7 @@ interface IGenre {
   name: genres
 }
 
-interface ICountry {
+export interface ICountry {
   name: string
 }
 

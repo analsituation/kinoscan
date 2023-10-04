@@ -2,40 +2,21 @@ import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
-import { ITV } from '@/customTypes/TV'
-
-const getTopRatedTVs = async () => {
-  try {
-    const url = process.env.API_URL! + '?type=tv-series&sortField=rating.kp&sortType=-1&externalId.kpHD=!null'
-    const api_key = process.env.API_KEY!
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-KEY': api_key
-      },
-      next: {
-        revalidate: 86400
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
-    }
-
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
-    }
-    return data.docs
-  } catch (error) {
-    console.error('Ошибка:', error)
-  }
-}
+import RefreshPageComponent from '../UI/RefreshPage'
+import { ITV, unwantedStatusCodes } from '@/customTypes'
+import { dataFetch } from '@/api/api'
 
 const TopRatedTV = async () => {
-  const tvs = await getTopRatedTVs()
-  if (!tvs) {
+  const tvs: ITV[] | unwantedStatusCodes = await dataFetch(
+    '?type=tv-series&sortField=rating.kp&sortType=-1&externalId.kpHD=!null'
+  )
+
+  if (tvs === 403) {
     redirect('/api-info')
+  }
+
+  if (tvs === 524) {
+    return <RefreshPageComponent />
   }
 
   return (

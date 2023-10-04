@@ -5,72 +5,48 @@ import { Metadata } from 'next'
 import Card from '@/components/Card'
 import Section from '@/components/Section'
 import ScrollbarProvider from '@/components/ScrollbarProvider'
-import { IPerson } from '@/customTypes/person'
-import { IMovie } from '@/customTypes/movie'
+import Top250Element from '@/components/UI/Top250Element'
+import RefreshPageComponent from '@/components/UI/RefreshPage'
+import { ICartoon, ICountry, IPerson, unwantedStatusCodes } from '@/customTypes'
 import { placeholderImg } from '@/utils/base64Img'
-import { ICartoon } from '@/customTypes/cartoon'
+import { minsToHours } from '@/utils/minsToHours'
+import { dataFetchWithId } from '@/api/api'
 
-const getMovieById = async (id: number) => {
-  try {
-    const url = process.env.API_URL! + `/${id}`
-    const api_key = process.env.API_KEY!
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-KEY': api_key
-      },
-      next: {
-        revalidate: 86400
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
-    }
-
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
-    }
-    return data
-  } catch (error) {
-    console.error('Ошибка:', error)
-  }
-}
-
-type MoviePageProps = {
+type CartoonPageProps = {
   params: {
     id: number
   }
 }
 
-export async function generateMetadata({ params: { id } }: MoviePageProps): Promise<Metadata> {
-  const cartoon: ICartoon = await getMovieById(+id)
+export async function generateMetadata({ params: { id } }: CartoonPageProps): Promise<Metadata> {
+  const cartoon: ICartoon = await dataFetchWithId(id)
 
-  if (!cartoon) {
-    redirect('/api-info')
-  }
   return {
     title: cartoon.name
   }
 }
 
-const MoviePage = async ({ params: { id } }: MoviePageProps) => {
-  const cartoon: ICartoon = await getMovieById(+id)
-  if (!cartoon) {
+const MoviePage = async ({ params: { id } }: CartoonPageProps) => {
+  const cartoon: ICartoon | unwantedStatusCodes = await dataFetchWithId(id)
+
+  if (cartoon === 403) {
     redirect('/api-info')
+  }
+
+  if (cartoon === 524) {
+    return <RefreshPageComponent />
   }
 
   const name = cartoon.name || cartoon.alternativeName || cartoon.enName
   const description = cartoon.description || 'No description...'
   const poster = cartoon.poster?.previewUrl || '/ks-stub.svg'
+  const director: IPerson = cartoon.persons.find(person => person.profession === 'режиссеры')!
+  const countries: ICountry[] = cartoon.countries
 
-  const castIdSet = new Set<number>()
   const cast: IPerson[] = []
 
   cartoon.persons.forEach(person => {
-    if (!castIdSet.has(person.id) && person.profession === 'актеры') {
-      castIdSet.add(person.id)
+    if (person.profession === 'актеры') {
       cast.push(person)
     }
   })
@@ -92,27 +68,47 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </div>
       </div>
 
-      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start gap-4 relative z-1 sm:block'>
-        <Image
-          placeholder={placeholderImg}
-          src={poster}
-          alt={name}
-          width={200}
-          height={300}
-          className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
-        ></Image>
-        <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
-          <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
-          <ul className='flex items-center gap-3 flex-wrap'>
-            {cartoon.genres.map(genre => (
-              <li
-                key={genre.name}
-                className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
-              >
-                {genre.name}
-              </li>
-            ))}
-          </ul>
+      <Section className='-mt-[150px] sm:-mt-[250px] relative z-1 sm:block'>
+        <div className='flex items-start gap-4 relative'>
+          <Image
+            placeholder={placeholderImg}
+            src={poster}
+            alt={name}
+            width={200}
+            height={300}
+            className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
+          ></Image>
+          <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
+            <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
+            <ul className='flex items-center gap-3 flex-wrap'>
+              {cartoon.genres.map(genre => (
+                <li
+                  key={genre.name}
+                  className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
+                >
+                  {genre.name}
+                </li>
+              ))}
+            </ul>
+            {!!cartoon.year && <p className='opacity-[0.9]'>Год производства: {cartoon.year}</p>}
+            {!!director && <p className='opacity-[0.9]'>Режиссер: {director.name || director.enName}</p>}
+            {!!countries && (
+              <p className='opacity-[0.9]'>
+                {countries.length > 1 ? 'Страны:' : 'Страна:'}
+                {countries.map(country => (
+                  <span className='mx-1 border-b-darkGrey'>{country.name}</span>
+                ))}
+              </p>
+            )}
+            {!!cartoon.movieLength && (
+              <p className='opacity-[0.9]'>
+                Время: {cartoon.movieLength} мин. / {minsToHours(cartoon.movieLength)}
+              </p>
+            )}
+          </div>
+          {!!cartoon.top250 && <Top250Element position={cartoon.top250} />}
+        </div>
+        <div className='mt-5'>
           <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
@@ -125,13 +121,14 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Трейлеры' hidden={cartoon.videos.trailers.length === 0}>
+      <Section title='Трейлеры' hidden={cartoon.videos ? true : false}>
         <ScrollbarProvider className='mb-6'>
-          {cartoon.videos.trailers.map((trailer, ind) => (
-            <div key={ind}>
-              <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
-            </div>
-          ))}
+          {!!cartoon.videos &&
+            cartoon.videos.trailers.map((trailer, ind) => (
+              <div key={ind}>
+                <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
+              </div>
+            ))}
         </ScrollbarProvider>
       </Section>
 
@@ -153,4 +150,5 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
     </>
   )
 }
+
 export default MoviePage

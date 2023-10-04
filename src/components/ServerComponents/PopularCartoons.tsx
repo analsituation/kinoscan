@@ -2,40 +2,20 @@ import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
-import { ICartoon } from '@/customTypes/cartoon'
-
-const getPopularCartoons = async () => {
-  try {
-    const url = process.env.API_URL! + '?type=cartoon&sortField=votes.kp&sortType=-1'
-    const api_key = process.env.API_KEY!
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-KEY': api_key
-      },
-      next: {
-        revalidate: 86400
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
-    }
-
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
-    }
-    return data.docs
-  } catch (error) {
-    console.error('Ошибка:', error)
-  }
-}
+import RefreshPageComponent from '../UI/RefreshPage'
+import { ICartoon, unwantedStatusCodes } from '@/customTypes'
+import { dataFetch } from '@/api/api'
 
 const PopularCartoons = async () => {
-  const cartoons = await getPopularCartoons()
-  if (!cartoons) {
+  const cartoons: ICartoon[] | unwantedStatusCodes = await dataFetch('?type=cartoon&sortField=votes.kp&sortType=-1')
+
+  if (cartoons === 403) {
     redirect('/api-info')
+  }
+
+  if (cartoons === 524) {
+    return <></>
+    // return <RefreshPageComponent />
   }
 
   return (

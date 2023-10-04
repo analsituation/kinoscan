@@ -1,9 +1,8 @@
 import SkeletonCard from '@/components/SkeletonCard'
 import Section from '@/components/Section'
-import { FC } from 'react'
 import SkeletonBigCard from '@/components/SkeletonBigCard'
 
-const loading: FC = () => {
+const loading = () => {
   return (
     <>
       <Section title='' skeleton>
@@ -14,7 +13,7 @@ const loading: FC = () => {
 
       <Section title='' skeleton>
         <div className='overflow-hidden flex items-center gap-3 h-[300px] mb-3'>
-          {[...new Array(4)].map((film, ind) => (
+          {[...new Array(6)].map((film, ind) => (
             <div key={ind} className='min-w-[400px] h-[300px] bg-lightGrey animate-pulse'></div>
           ))}
         </div>

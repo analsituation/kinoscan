@@ -9,7 +9,10 @@ const config: Config = {
         white: '#ffffff',
         lightGrey: '#f4f4f4',
         darkGrey: '#373737',
-        dark: '#141414'
+        superlight: '#fcfcfc',
+        dark: '#141414',
+        gold: '#a08338',
+        secondGold: '#f3c85a'
       },
       screens: {
         md: {

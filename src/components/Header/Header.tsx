@@ -17,10 +17,12 @@ const Header: FC = () => {
       <Container className='flex justify-between gap-3 md:gap-3 md:px-6'>
         <div className='flex items-center gap-6'>
           <h1 className='text-2xl text-accent font-semibold'>
-            <Link href='/'>Киноскан</Link>
+            <Link prefetch={false} href='/'>
+              Киноскан
+            </Link>
           </h1>
           <div className='flex items-center gap-1.5 md:fixed md:bottom-0 md:left-0 md:right-0 md:justify-center md:py-3 md:bg-dark md:gap-6'>
-            <Link className={pathname === 'movies' ? styles.link_active : styles.link} href='/movies'>
+            <Link prefetch={false} className={pathname === 'movies' ? styles.link_active : styles.link} href='/movies'>
               Фильмы
             </Link>
             <Link className={pathname === 'tv-series' ? styles.link_active : styles.link} href='/tv-series'>

@@ -1,0 +1,7 @@
+export * from './anime'
+export * from './cartoon'
+export * from './genre'
+export * from './movie'
+export * from './otherTypes'
+export * from './person'
+export * from './TV'

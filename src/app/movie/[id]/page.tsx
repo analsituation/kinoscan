@@ -4,38 +4,13 @@ import { Metadata } from 'next'
 
 import Card from '@/components/Card'
 import Section from '@/components/Section'
-import { IPerson } from '@/customTypes/person'
-import { IMovie } from '@/customTypes/movie'
-import { placeholderImg } from '@/utils/base64Img'
 import ScrollbarProvider from '@/components/ScrollbarProvider'
-
-const getMovieById = async (id: number) => {
-  try {
-    const url = process.env.API_URL! + `/${id}`
-    const api_key = process.env.API_KEY!
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-KEY': api_key
-      },
-      next: {
-        revalidate: 86400
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
-    }
-
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
-    }
-    return data.docs
-  } catch (error) {
-    console.error('Ошибка:', error)
-  }
-}
+import Top250Element from '@/components/UI/Top250Element'
+import RefreshPageComponent from '@/components/UI/RefreshPage'
+import { ICountry, IMovie, IPerson, unwantedStatusCodes } from '@/customTypes'
+import { placeholderImg } from '@/utils/base64Img'
+import { dataFetchWithId } from '@/api/api'
+import { minsToHours } from '@/utils/minsToHours'
 
 type MoviePageProps = {
   params: {
@@ -44,35 +19,41 @@ type MoviePageProps = {
 }
 
 export async function generateMetadata({ params: { id } }: MoviePageProps): Promise<Metadata> {
-  const movie: IMovie = await getMovieById(+id)
-  if (!movie) {
-    redirect('/api-info')
-  }
+  const movie: IMovie = await dataFetchWithId(id)
 
   return {
-    title: movie.name
+    title: movie.name || movie.enName || movie.alternativeName
   }
 }
 
 const MoviePage = async ({ params: { id } }: MoviePageProps) => {
-  const movie: IMovie = await getMovieById(+id)
-  if (!movie) {
+  const movie: IMovie | unwantedStatusCodes = await dataFetchWithId(id)
+
+  if (movie === 403) {
     redirect('/api-info')
+  }
+
+  if (movie === 524) {
+    return <RefreshPageComponent />
   }
 
   const name = movie.name || movie.alternativeName || movie.enName
   const description = movie.description || 'No description...'
   const poster = movie.poster?.previewUrl || '/ks-stub.svg'
+  const director: IPerson = movie.persons.find(person => person.profession === 'режиссеры')!
+  const countries: ICountry[] = movie.countries
 
-  const castIdSet = new Set<number>()
   const cast: IPerson[] = []
 
   movie.persons.forEach(person => {
-    if (!castIdSet.has(person.id) && person.profession === 'актеры') {
-      castIdSet.add(person.id)
+    if (person.profession === 'актеры') {
       cast.push(person)
     }
   })
+
+  // if (!director) {
+  //   director = null
+  // }
 
   return (
     <>
@@ -91,27 +72,57 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </div>
       </div>
 
-      <Section className='-mt-[150px] sm:-mt-[250px] flex items-start gap-4 relative z-1 sm:block'>
-        <Image
-          placeholder={placeholderImg}
-          src={poster}
-          alt={name}
-          width={200}
-          height={300}
-          className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
-        ></Image>
-        <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
-          <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
-          <ul className='flex items-center gap-3 flex-wrap'>
-            {movie.genres.map(genre => (
-              <li
-                key={genre.name}
-                className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
-              >
-                {genre.name}
-              </li>
-            ))}
-          </ul>
+      <Section className='-mt-[150px] sm:-mt-[250px] relative z-1 sm:block'>
+        <div className='flex items-start gap-4 relative'>
+          <Image
+            placeholder={placeholderImg}
+            src={poster}
+            alt={name}
+            width={200}
+            height={300}
+            className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
+          ></Image>
+          <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
+            <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
+            <ul className='flex items-center gap-3 flex-wrap'>
+              {movie.genres.map(genre => (
+                <li
+                  key={genre.name}
+                  className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
+                >
+                  {genre.name}
+                </li>
+              ))}
+            </ul>
+            {!!movie.year && <p className='opacity-[0.9]'>Год производства: {movie.year}</p>}
+            {!!director && <p className='opacity-[0.9]'>Режиссер: {director.name || director.enName}</p>}
+            {!!countries && (
+              <p className='opacity-[0.9]'>
+                {countries.length > 1 ? 'Страны:' : 'Страна:'}
+                {countries.map(country => (
+                  <span className='mx-1 border-b-darkGrey'>{country.name}</span>
+                ))}
+              </p>
+            )}
+            {!!movie.movieLength && (
+              <p className='opacity-[0.9]'>
+                Время: {movie.movieLength} мин. / {minsToHours(movie.movieLength)}
+              </p>
+            )}
+          </div>
+          {!!movie.top250 && <Top250Element position={movie.top250} />}
+          {/* {!!movie.rating.kp && (
+              <div className='absolute top-[50px] right-10 text-right text-white'>
+                Рейтинг: <br />
+                <span className='text-accent tracking-widest text-xl'>{movie.rating.kp.toFixed(2)}</span>
+                <br />
+                <span className='text-sm'>
+                  {new Intl.NumberFormat('ru', { maximumSignificantDigits: 3 }).format(movie.votes.kp)} оценок
+                </span>
+              </div>
+          )} */}
+        </div>
+        <div className='mt-5'>
           <p className='opacity-[0.9]'>{description}</p>
         </div>
       </Section>
@@ -124,13 +135,14 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Трейлеры' hidden={movie.videos.trailers.length === 0}>
+      <Section title='Трейлеры' hidden={movie.videos ? true : false}>
         <ScrollbarProvider className='mb-6'>
-          {movie.videos.trailers.map((trailer, ind) => (
-            <div key={ind}>
-              <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
-            </div>
-          ))}
+          {!!movie.videos &&
+            movie.videos.trailers.map((trailer, ind) => (
+              <div key={ind}>
+                <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
+              </div>
+            ))}
         </ScrollbarProvider>
       </Section>
 

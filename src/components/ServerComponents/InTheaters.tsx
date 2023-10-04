@@ -2,40 +2,19 @@ import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import BigCard from '../BigCard'
-import { IMovie } from '@/customTypes/movie'
-
-const getFilmsInTheaters = async () => {
-  try {
-    const url = process.env.API_URL! + '?ticketsOnSale=true&year=2023'
-    const api_key = process.env.API_KEY!
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'X-API-KEY': api_key
-      },
-      next: {
-        revalidate: 86400
-      }
-    })
-
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
-    }
-
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
-    }
-    return data.docs
-  } catch (error) {
-    console.error('Ошибка:', error)
-  }
-}
+import RefreshPageComponent from '../UI/RefreshPage'
+import { IMovie, unwantedStatusCodes } from '@/customTypes'
+import { dataFetch } from '@/api/api'
 
 const InTheaters = async () => {
-  const movies = await getFilmsInTheaters()
-  if (!movies) {
+  const movies: IMovie[] | unwantedStatusCodes = await dataFetch('?ticketsOnSale=true')
+
+  if (movies === 403) {
     redirect('/api-info')
+  }
+
+  if (movies === 524) {
+    return <RefreshPageComponent />
   }
 
   return (

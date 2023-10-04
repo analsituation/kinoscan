@@ -12,20 +12,100 @@ export const searchFilms = async (query: string) => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 86400
-      }
+        revalidate: 0
+      },
+      signal: AbortSignal.timeout(6000)
     })
 
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
+    if (response.status === 403) {
+      return 403
     }
 
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
+    if (!response.ok) {
+      throw new Error('Ошибка HTTP ' + response.ok)
     }
-    return data.docs
+
+    if (response.ok) {
+      const data = await response.json()
+      return data.docs
+    }
   } catch (error) {
-    console.error('Ошибка:', error)
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        return 524
+      }
+    } else return error
+  }
+}
+
+export const dataFetchWithId = async (id: number) => {
+  try {
+    const url = process.env.API_URL! + `/${id}`
+    const api_key = process.env.API_KEY!
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-API-KEY': api_key
+      },
+      next: {
+        revalidate: 0
+      },
+      signal: AbortSignal.timeout(8000)
+    })
+
+    if (response.status === 403) {
+      return 403
+    }
+
+    if (!response.ok) {
+      throw new Error('Ошибка HTTP ' + response.ok)
+    }
+
+    if (response.ok) {
+      const data = await response.json()
+      return data
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        return 524
+      }
+    } else return error
+  }
+}
+
+export const dataFetch = async (query: string) => {
+  try {
+    const url = process.env.API_URL! + `${query}`
+    const api_key = process.env.API_KEY!
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'X-API-KEY': api_key
+      },
+      next: {
+        revalidate: 0
+      },
+      signal: AbortSignal.timeout(10000)
+    })
+
+    if (response.status === 403) {
+      return 403
+    }
+
+    if (!response.ok) {
+      throw new Error('Ошибка HTTP ' + response.ok)
+    }
+
+    if (response.ok) {
+      const data = await response.json()
+      return data.docs
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        return 524
+      }
+    } else return error
   }
 }

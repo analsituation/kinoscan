@@ -1,3 +1,5 @@
+import clsx from 'clsx'
+
 import SkeletonCard from '@/components/SkeletonCard'
 import Section from '@/components/Section'
 
@@ -32,6 +34,18 @@ const loading = () => {
             <SkeletonCard key={ind}></SkeletonCard>
           ))}
         </div>
+      </Section>
+
+      <Section title='' skeleton>
+        {[...new Array(3)].map((season, ind) => (
+          <div
+            key={ind}
+            className={clsx('h-[48px] flex gap-[140px] bg-lightGrey animate-pulse', ind % 2 === 1 && 'bg-white')}
+          >
+            <span className='w-[100px] inline-block'></span>
+            <span className='inline-block'></span>
+          </div>
+        ))}
       </Section>
 
       <Section title='' skeleton>

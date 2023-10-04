@@ -6,45 +6,47 @@ import clsx from 'clsx'
 import Card from '@/components/Card'
 import Section from '@/components/Section'
 import ScrollbarProvider from '@/components/ScrollbarProvider'
+import Top250Element from '@/components/UI/Top250Element'
 import RefreshPageComponent from '@/components/UI/RefreshPage'
-import { ICountry, IPerson, ITV, unwantedStatusCodes } from '@/customTypes'
+import { ICountry, IAnime, IPerson, unwantedStatusCodes } from '@/customTypes'
 import { placeholderImg } from '@/utils/base64Img'
+import { minsToHours } from '@/utils/minsToHours'
 import { dataFetchWithId } from '@/api/api'
 
-type TVPageProps = {
+type AnimePageProps = {
   params: {
     id: number
   }
 }
 
-export async function generateMetadata({ params: { id } }: TVPageProps): Promise<Metadata> {
-  const tv: ITV = await dataFetchWithId(+id)
+export async function generateMetadata({ params: { id } }: AnimePageProps): Promise<Metadata> {
+  const anime: IAnime = await dataFetchWithId(id)
 
   return {
-    title: tv.name
+    title: anime.name || anime.enName || anime.alternativeName
   }
 }
 
-const TVPage = async ({ params: { id } }: TVPageProps) => {
-  const tv: ITV | unwantedStatusCodes = await dataFetchWithId(+id)
+const MoviePage = async ({ params: { id } }: AnimePageProps) => {
+  const anime: IAnime | unwantedStatusCodes = await dataFetchWithId(id)
 
-  if (tv === 403) {
+  if (anime === 403) {
     redirect('/api-info')
   }
 
-  if (tv === 524) {
+  if (anime === 524) {
     return <RefreshPageComponent />
   }
 
-  const name = tv.name || tv.alternativeName || tv.enName
-  const description = tv.description || 'No description...'
-  const poster = tv.poster?.previewUrl || '/ks-stub.svg'
-  const director: IPerson = tv.persons.find(person => person.profession === 'режиссеры')!
-  const countries: ICountry[] = tv.countries
+  const name = anime.name || anime.alternativeName || anime.enName
+  const description = anime.description || 'No description...'
+  const poster = anime.poster?.previewUrl || '/ks-stub.svg'
+  const director: IPerson = anime.persons.find(person => person.profession === 'режиссеры')!
+  const countries: ICountry[] = anime.countries
 
   const cast: IPerson[] = []
 
-  tv.persons.forEach(person => {
+  anime.persons.forEach(person => {
     if (person.profession === 'актеры') {
       cast.push(person)
     }
@@ -61,7 +63,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
             alt={name}
             layout='fill'
             style={{ objectFit: 'cover' }}
-            src={tv.backdrop.url}
+            src={anime.backdrop.url}
             className='mx-auto'
           ></Image>
         </div>
@@ -74,13 +76,13 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
             src={poster}
             alt={name}
             width={200}
-            height={200}
+            height={300}
             className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
           ></Image>
           <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
-            <p className='text-3xl text-lightGrey sm:text-dark'>{name}</p>
+            <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
             <ul className='flex items-center gap-3 flex-wrap'>
-              {tv.genres.map(genre => (
+              {anime.genres.map(genre => (
                 <li
                   key={genre.name}
                   className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
@@ -89,7 +91,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
                 </li>
               ))}
             </ul>
-            {!!tv.year && <p className='opacity-[0.9]'>Год производства: {tv.year}</p>}
+            {!!anime.year && <p className='opacity-[0.9]'>Год производства: {anime.year}</p>}
             {!!director && <p className='opacity-[0.9]'>Режиссер: {director.name || director.enName}</p>}
             {!!countries && (
               <p className='opacity-[0.9]'>
@@ -99,7 +101,13 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
                 ))}
               </p>
             )}
+            {!!anime.movieLength && (
+              <p className='opacity-[0.9]'>
+                Время: {anime.movieLength} мин. / {minsToHours(anime.movieLength)}
+              </p>
+            )}
           </div>
+          {!!anime.top250 && <Top250Element position={anime.top250} />}
         </div>
         <div className='mt-5'>
           <p className='opacity-[0.9]'>{description}</p>
@@ -114,19 +122,21 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Сезоны' hidden={tv.seasonsInfo.length === 0}>
-        {tv.seasonsInfo.slice(0).map((season, ind) => (
-          <div key={season.number} className={clsx('bg-lightGrey p-3 flex gap-[140px]', ind % 2 === 1 && 'bg-white')}>
-            <span className='w-[100px] inline-block'>Сезон {season.number}</span>
-            <span className='inline-block'>{season.episodesCount} серий</span>
-          </div>
-        ))}
-      </Section>
+      {!!anime.isSeries && (
+        <Section title='Сезоны' hidden={anime.seasonsInfo.length === 0}>
+          {anime.seasonsInfo.slice(0).map((season, ind) => (
+            <div key={season.number} className={clsx('bg-lightGrey p-3 flex gap-[140px]', ind % 2 === 1 && 'bg-white')}>
+              <span className='w-[100px] inline-block'>Сезон {season.number}</span>
+              <span className='inline-block'>{season.episodesCount} серий</span>
+            </div>
+          ))}
+        </Section>
+      )}
 
-      <Section title='Трейлеры' hidden={tv.videos ? true : false}>
+      <Section title='Трейлеры' hidden={anime.videos ? true : false}>
         <ScrollbarProvider className='mb-6'>
-          {!!tv.videos &&
-            tv.videos.trailers.map((trailer, ind) => (
+          {!!anime.videos &&
+            anime.videos.trailers.map((trailer, ind) => (
               <div key={ind}>
                 <iframe allowFullScreen width='400' height='300' src={trailer.url + '?controls=1'}></iframe>
               </div>
@@ -134,22 +144,22 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Другие фильмы этой серии' hidden={tv.sequelsAndPrequels.length === 0}>
+      <Section title='Другие фильмы этой серии' hidden={anime.sequelsAndPrequels.length === 0}>
         <ScrollbarProvider>
-          {tv.sequelsAndPrequels.map(el => (
-            <Card entity={el} key={el.id}></Card>
+          {anime.sequelsAndPrequels.map(anime => (
+            <Card entity={anime} key={anime.id}></Card>
           ))}
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Похожее' hidden={tv.similarMovies.length === 0}>
+      <Section title='Похожее' hidden={anime.similarMovies.length === 0}>
         <ScrollbarProvider>
-          {tv.similarMovies.map(el => (
-            <Card entity={el} key={el.id}></Card>
+          {anime.similarMovies.map(anime => (
+            <Card entity={anime} key={anime.id}></Card>
           ))}
         </ScrollbarProvider>
       </Section>
     </>
   )
 }
-export default TVPage
+export default MoviePage

@@ -41,7 +41,11 @@ const Card = ({ entity }: CardProps) => {
           <p className='py-1.5 w-[160px] line-clamp-2 mx-auto'>{name}</p>
         </div>
       ) : (
-        <Link draggable={false} href={`/${entity.type}/${entity.id}`}>
+        <Link
+          prefetch={false}
+          draggable={false}
+          href={`/${entity.type === 'animated-series' ? 'tv-series' : entity.type}/${entity.id}`}
+        >
           <div className='cursor-pointer flex flex-col mx-4 my-2'>
             <div className='h-[240px] w-[160px] mx-auto relative rounded-lg overflow-hidden'>
               <Image

@@ -2,9 +2,16 @@ import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import BigCard from '../BigCard'
+import RefreshPageComponent from '../UI/RefreshPage'
+import { IMovie, unwantedStatusCodes } from '@/customTypes'
 
 const getRandomTop250 = async () => {
-  const number = Math.floor(Math.random() * (250 - 1) + 1)
+  // По необъяснимой причине на запрос по многим позициям выше тридцатой
+  // сервер отдает пустой массив. В связи с этим рандом определяется только
+  // из первых 30 чисел и на всякий случай предусмотрена заглушка в виде возврата
+  // 524 вместо данных и была возможность перезагрузить компонент,
+  // на случай если все-таки пришел пустой массив
+  const number = Math.floor(Math.random() * (30 - 1) + 1)
   try {
     const url = process.env.API_URL! + `?isSeries=false&top250=${number}`
     const api_key = process.env.API_KEY!
@@ -14,33 +21,60 @@ const getRandomTop250 = async () => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 86400
-      }
+        revalidate: 0
+      },
+      signal: AbortSignal.timeout(10000)
     })
 
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
+    if (response.status === 403) {
+      return 403
     }
 
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
+    if (!response.ok) {
+      throw new Error('Ошибка HTTP ' + response.ok)
     }
-    return data.docs[0]
+
+    if (response.ok) {
+      const data = await response.json()
+      // Заглушка на случай если с сервера пришли неверные данные
+      if (data.docs.length === 0) return 524
+      return {
+        number,
+        data: data.docs[0]
+      }
+    }
   } catch (error) {
-    console.error('Ошибка:', error)
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        return 524
+      }
+    }
   }
 }
 
+// number возвращается для того чтобы передать в карточку и отрисовать позицию,
+// поскольку в API не предусмотрен возврат соответствующего поля при поиске
+type dataFromServerType = {
+  number: number
+  data: IMovie
+}
+
 const RandomTop250 = async () => {
-  const movie = await getRandomTop250()
-  if (!movie) {
+  let movie: dataFromServerType | unwantedStatusCodes | undefined = await getRandomTop250()
+
+  if (movie === 403) {
     redirect('/api-info')
   }
 
+  if (movie === 524) {
+    return <RefreshPageComponent />
+  }
+
+  if (!movie) return null
+
   return (
     <Section title={`Случайный фильм из Топ250`} carousel={false}>
-      <BigCard entity={movie}></BigCard>
+      <BigCard position={movie.number} entity={movie.data}></BigCard>
     </Section>
   )
 }

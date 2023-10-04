@@ -28,7 +28,7 @@ const Section: FC<PropsWithChildren<SectionProps>> = ({
   return (
     <Container className={className}>
       {typeof title === 'string' ? (
-        <h1 className={clsx('text-xl pl-10 py-4', skeleton && 'ml-10 my-4 bg-lightGrey animate-pulse h-5 w-1/6')}>
+        <h1 className={clsx('text-2xl pl-10 py-4', skeleton && 'ml-10 my-4 bg-lightGrey animate-pulse h-5 w-1/6')}>
           {title}
         </h1>
       ) : (

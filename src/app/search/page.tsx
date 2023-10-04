@@ -6,7 +6,7 @@ import { FC, useEffect, useState } from 'react'
 import { searchFilms } from '@/api/api'
 import Section from '@/components/Section'
 import Card from '@/components/Card'
-import { IMovieShort } from '@/customTypes/movie'
+import { IMovieShort } from '@/customTypes'
 
 const SearchPage: FC = () => {
   const [searchResult, setSearchResult] = useState<IMovieShort[]>([])
@@ -20,7 +20,6 @@ const SearchPage: FC = () => {
     if (query?.trim()) {
       searchFilms(query).then(data => {
         if (!data) {
-          console.log('ASD')
           router.push('/api-info')
         } else {
           setSearchResult(data)

@@ -2,7 +2,8 @@ import { redirect } from 'next/navigation'
 
 import Section from '../Section'
 import Card from '../Card'
-import { ICartoon } from '@/customTypes/cartoon'
+import RefreshPageComponent from '../UI/RefreshPage'
+import { IMovie, ITV, unwantedStatusCodes } from '@/customTypes'
 import { getRandomGenre } from '@/utils/getRandomGenre'
 
 const getPopularFromGenre = async () => {
@@ -16,39 +17,62 @@ const getPopularFromGenre = async () => {
         'X-API-KEY': api_key
       },
       next: {
-        revalidate: 86400
-      }
+        revalidate: 0
+      },
+      signal: AbortSignal.timeout(6000)
     })
 
-    if (!response.ok) {
-      throw new Error('Ошибка HTTP ' + response.status)
+    if (response.status === 403) {
+      return 403
     }
 
-    const data = await response.json()
-    if (data.statusCode === 403) {
-      return undefined
+    if (!response.ok) {
+      throw new Error('Ошибка HTTP ' + response.ok)
     }
-    return {
-      genre,
-      films: data.docs
+
+    if (response.ok) {
+      const data = await response.json()
+      const returnObj: fetchByGenreResponse | unwantedStatusCodes = {
+        genre,
+        films: data.docs
+      }
+      return returnObj
     }
   } catch (error) {
-    console.error('Ошибка:', error)
+    if (error instanceof Error) {
+      if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+        return 524
+      }
+    }
   }
 }
 
+type fetchByGenreResponse = {
+  genre: string
+  films: IMovie[] | ITV[]
+}
+
 const PopularFromGenre = async () => {
-  const data = await getPopularFromGenre()
-  if (!data) {
+  const data: fetchByGenreResponse | unwantedStatusCodes | undefined = await getPopularFromGenre()
+
+  if (data === 403) {
     redirect('/api-info')
+  }
+
+  if (data === 524) {
+    return <RefreshPageComponent />
+  }
+
+  if (!data) {
+    return null
   }
 
   const title = `Случайный жанр: «${data.genre[0].toUpperCase() + data.genre.slice(1)}»`
 
   return (
     <Section title={title} movieCard carousel>
-      {data.films.map((cartoon: ICartoon) => (
-        <Card entity={cartoon}></Card>
+      {data.films.map(movie => (
+        <Card entity={movie}></Card>
       ))}
     </Section>
   )

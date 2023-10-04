@@ -1,42 +1,70 @@
 'use client'
 
-import { FC, Suspense, useEffect, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { GoSearch } from 'react-icons/go'
 
 import { searchFilms } from '@/api/api'
 import { useDebounce } from '@/hooks/debounce'
-
-import { IMovie } from '@/customTypes/movie'
+import { IMovie } from '@/customTypes'
 
 const Search: FC = () => {
-  const [isFocused, setIsFocused] = useState(false)
-  const [dropdown, setDropdown] = useState(false)
+  const [dropdownOpened, setDropdownOpened] = useState(false)
+  const [query, setQuery] = useState('')
+  const [searchResult, setSearchResult] = useState<IMovie[]>([])
+
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const router = useRouter()
 
-  const [query, setQuery] = useState('')
-  const [searchResult, setSearchResult] = useState<IMovie[] | string>([])
-
-  const debounced = useDebounce<string>(query, 400)
+  const debounced = useDebounce<string>(query, 200)
 
   useEffect(() => {
     if (debounced.length >= 3) {
-      setDropdown(true)
+      setDropdownOpened(true)
       searchFilms(query).then(data => {
-        if (!data) {
-          router.push('/api-info')
-          setDropdown(false)
-        } else {
-          setSearchResult(data)
+        switch (data) {
+          case 403:
+            router.push('/api-info')
+            setDropdownOpened(false)
+            break
+          // case 524:
+          //   a che bi tyt mozhno vidumat...
+          //   setDropdownOpened(false)
+          //   break;
+          default:
+            setSearchResult(data)
+            break
         }
       })
     } else {
-      setDropdown(false)
+      setDropdownOpened(false)
     }
   }, [debounced])
+
+  useEffect(() => {
+    setDropdownOpened(false)
+  }, [query])
+
+  useEffect(() => {
+    if (!dropdownOpened) return
+    document.addEventListener('click', handleClick)
+
+    return () => {
+      document.removeEventListener('click', handleClick)
+    }
+  }, [dropdownOpened])
+
+  const handleClick = (e: MouseEvent) => {
+    if (e.target === inputRef.current) return
+    if (!dropdownRef.current) return
+    if (!dropdownRef.current.contains(e.target as Node)) {
+      setDropdownOpened(false)
+    }
+  }
 
   const searchHandler = () => {
     if (query.length) {
@@ -49,11 +77,8 @@ const Search: FC = () => {
     <>
       <div className='flex items-center relative min-w-[350px] sm:min-w-[150px] z-2'>
         <input
-          onFocus={() => setIsFocused(true)}
-          // KocTbIJIb
-          onBlur={() => {
-            setTimeout(() => setIsFocused(false), 100)
-          }}
+          ref={inputRef}
+          onFocus={() => (query.length >= 3 ? setDropdownOpened(true) : {})}
           className='outline-0 bg-darkGrey px-3 py-1 rounded-sm w-full'
           type='text'
           placeholder='Search'
@@ -62,20 +87,30 @@ const Search: FC = () => {
         />
         <GoSearch onClick={searchHandler} className='text-white ml-2' />
 
-        {dropdown && isFocused && (
-          <div className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'>
-            <div className='relative pb-9'>
-              {/* Search result */}
-              <div className='overflow-y-scroll max-h-[500px] scrollbar scrollbar-thumb-accent scrollbar-track-lightGrey'>
-                {Array.isArray(searchResult) &&
-                  searchResult.slice(0, 5).map(movie => (
-                    <Link href={`/${movie.type}/${movie.id}`} key={movie.id} onClick={() => setQuery('')}>
+        {!!dropdownOpened && (
+          <div
+            ref={dropdownRef}
+            className='absolute top-10 left-0 right-0 rounded-md overflow-hidden bg-darkGrey shadow-lg z-2'
+          >
+            {!!searchResult.length && (
+              <div className='relative pb-9'>
+                <div className='overflow-y-scroll max-h-[500px] scrollbar scrollbar-thumb-accent scrollbar-track-darkGrey'>
+                  {searchResult.slice(0, 5).map(movie => (
+                    <Link
+                      onClick={() => {
+                        setDropdownOpened(false)
+                        setQuery('')
+                      }}
+                      prefetch={false}
+                      href={`/${movie.type}/${movie.id}`}
+                      key={movie.id}
+                    >
                       <div className='flex items-start gap-3 px-2 py-3 cursor-pointer'>
                         <div className='relative min-w-[80px] h-[120px] rounded-sm'>
                           <div className='bg-lightGrey animate-pulse absolute top-0 left-0 right-0 bottom-0 z-0'></div>
                           <Image
-                            width={80}
-                            height={120}
+                            fill
+                            style={{ objectFit: 'cover' }}
                             src={movie.poster?.previewUrl || '/ks-stub.svg'}
                             alt={movie.name || movie.alternativeName || movie.enName}
                             className='w-full h-full relative z-1'
@@ -99,14 +134,18 @@ const Search: FC = () => {
                       </div>
                     </Link>
                   ))}
-              </div>
+                </div>
 
-              {searchResult.length > 5 && (
-                <button onClick={searchHandler} className='px-3 py-1.5 bg-accent absolute bottom-0 left-0 right-0'>
-                  More results
-                </button>
-              )}
-            </div>
+                {searchResult.length > 5 && (
+                  <button onClick={searchHandler} className='px-3 py-1.5 bg-accent absolute bottom-0 left-0 right-0'>
+                    More results
+                  </button>
+                )}
+              </div>
+            )}
+            {searchResult.length === 0 && (
+              <div className='relative px-3 py-2'>Ничего не найдено по запросу "{query}"</div>
+            )}
           </div>
         )}
       </div>
