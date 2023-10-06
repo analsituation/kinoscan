@@ -1,15 +1,17 @@
 import { redirect } from 'next/navigation'
 import Image from 'next/image'
 import { Metadata } from 'next'
+import clsx from 'clsx'
 
 import Card from '@/components/Card'
 import Section from '@/components/Section'
 import ScrollbarProvider from '@/components/ScrollbarProvider'
 import Top250Element from '@/components/UI/Top250Element'
 import RefreshPageComponent from '@/components/UI/RefreshPage'
+import GenresList from '@/components/UI/GenresList'
+import BackDrop from '@/components/UI/BackDrop'
 import { ICartoon, ICountry, IPerson, unwantedStatusCodes } from '@/customTypes'
 import { placeholderImg } from '@/utils/base64Img'
-import { minsToHours } from '@/utils/minsToHours'
 import { dataFetchWithId } from '@/api/api'
 
 type CartoonPageProps = {
@@ -40,6 +42,7 @@ const MoviePage = async ({ params: { id } }: CartoonPageProps) => {
   const name = cartoon.name || cartoon.alternativeName || cartoon.enName
   const description = cartoon.description || 'No description...'
   const poster = cartoon.poster?.previewUrl || '/ks-stub.svg'
+  const backdrop = cartoon.backdrop.url
   const director: IPerson = cartoon.persons.find(person => person.profession === 'режиссеры')!
   const countries: ICountry[] = cartoon.countries
 
@@ -53,64 +56,55 @@ const MoviePage = async ({ params: { id } }: CartoonPageProps) => {
 
   return (
     <>
-      <div className='h-[420px] sm:h-[250px] left-0 right-0 top-0 relative z-[-1] overflow-hidden'>
-        <div className='backdrop-gradient'></div>
-        <div className='w-[50%] h-full mx-auto relative'>
-          <Image
-            placeholder={'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs='}
-            quality={65}
-            alt={name}
-            layout='fill'
-            style={{ objectFit: 'cover' }}
-            src={cartoon.backdrop.url}
-            className='mx-auto'
-          ></Image>
-        </div>
-      </div>
+      {backdrop && <BackDrop name={name} backdrop={backdrop} />}
 
-      <Section className='-mt-[150px] sm:-mt-[250px] relative z-1 sm:block'>
-        <div className='flex items-start gap-4 relative'>
+      <Section className={clsx('relative z-1', backdrop && '-mt-[150px] sm:-mt-[250px]')}>
+        <div className='relative flex items-center sm:items-start gap-5 sm:flex-col'>
           <Image
             placeholder={placeholderImg}
             src={poster}
             alt={name}
             width={200}
-            height={300}
-            className='w-[200px] min-w-[200px] h-[300px] sm:ml-3 shadow-md rounded-md'
+            height={200}
+            className='w-[200px] min-w-[200px] h-[300px] sm:ml-5 shadow-md rounded-md'
           ></Image>
-          <div className='px-3 flex flex-col items-start gap-5 mt-10 sm:mt-5'>
-            <p className='text-3xl text-lightGrey line-clamp-1 sm:text-dark'>{name}</p>
-            <ul className='flex items-center gap-3 flex-wrap'>
-              {cartoon.genres.map(genre => (
-                <li
-                  key={genre.name}
-                  className='px-3 py-1.5 bg-primary cursor-pointer rounded-lg text-sm bg-lightGrey text-accent shadow-md hover:bg-accent hover:text-lightGrey transition-all'
-                >
-                  {genre.name}
-                </li>
-              ))}
-            </ul>
-            {!!cartoon.year && <p className='opacity-[0.9]'>Год производства: {cartoon.year}</p>}
-            {!!director && <p className='opacity-[0.9]'>Режиссер: {director.name || director.enName}</p>}
-            {!!countries && (
-              <p className='opacity-[0.9]'>
-                {countries.length > 1 ? 'Страны:' : 'Страна:'}
-                {countries.map(country => (
-                  <span className='mx-1 border-b-darkGrey'>{country.name}</span>
-                ))}
+          <div className='sm:mx-5 flex-grow'>
+            <div className='px-3 max-w-[75%] sm:px-0 flex flex-col items-start gap-5'>
+              <p
+                className={clsx(
+                  'text-3xl sm:text-darkGrey',
+                  backdrop && 'text-lightGrey',
+                  !backdrop && 'text-darkGrey'
+                )}
+              >
+                {name}
               </p>
-            )}
-            {!!cartoon.movieLength && (
-              <p className='opacity-[0.9]'>
-                Время: {cartoon.movieLength} мин. / {minsToHours(cartoon.movieLength)}
-              </p>
-            )}
+              <GenresList object={cartoon} />
+              {!!cartoon.year && (
+                <p>
+                  <span className='opacity-[0.9]'>Год производства: </span>
+                  {cartoon.year}
+                </p>
+              )}
+              {!!director && (
+                <p>
+                  <span className='opacity-[0.9]'>Режиссер: </span>
+                  {director.name || director.enName}
+                </p>
+              )}
+              {!!countries && (
+                <p>
+                  <span className='opacity-[0.9]'>{countries.length > 1 ? 'Страны:' : 'Страна:'}</span>
+                  {countries.map(country => (
+                    <span className='mx-1'>{country.name}</span>
+                  ))}
+                </p>
+              )}
+            </div>
           </div>
           {!!cartoon.top250 && <Top250Element position={cartoon.top250} />}
         </div>
-        <div className='mt-5'>
-          <p className='opacity-[0.9]'>{description}</p>
-        </div>
+        <div className='mt-5 mx-5'>{description}</div>
       </Section>
 
       <Section title='В ролях' hidden={cast.length === 0}>

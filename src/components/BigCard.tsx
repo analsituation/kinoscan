@@ -40,9 +40,9 @@ const BigCard = ({ entity, position }: BigCardProps) => {
           className='rounded-l-md'
         />
       </div>
-      <div className='flex flex-col items-start justify-start pl-[200px] pt-6 pb-6 h-full gap-3'>
-        <div>
-          <div className='text-2xl sm:line-clamp-2'>
+      <div className='flex flex-col items-start justify-start sm:justify-center pl-[200px] py-6 h-full gap-3 sm:gap-2'>
+        <>
+          <div className='text-2xl max-w-[80%] sm:max-w-full sm:line-clamp-2'>
             <Link prefetch={false} href={`/${entity?.type}/${entity?.id}`}>
               {name}
             </Link>
@@ -55,15 +55,15 @@ const BigCard = ({ entity, position }: BigCardProps) => {
               {entity.releaseYears[0].start} - {entity.releaseYears[0].end}
             </p>
           )}
-        </div>
-        <p className='text-sm max-w-[80%] md:max-w-full line-clamp-[7]'>{description}</p>
+        </>
+        <p className='text-sm max-w-[80%] md:max-w-full line-clamp-[7] sm:line-clamp-[4]'>{description}</p>
         <Link
           prefetch={false}
           draggable={false}
           href={`/${entity?.type}/${entity?.id}`}
-          className='text-dark text-xl hover:text-accent transition-all border-b-solid  border-black flex gap-1 items-center'
+          className='text-dark text-xl hover:text-accent transition-all flex gap-1 items-center justify-start'
         >
-          <span>Перейти на страницу</span>
+          <span>Перейти</span>
           <RiArrowRightSLine size={20} className='mt-1.5' />
         </Link>
       </div>

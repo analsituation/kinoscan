@@ -1,9 +1,9 @@
 import { IMovie } from './movie'
 
 export interface ITV extends Omit<IMovie, 'movieLength' | 'isSeries'> {
-  releaseYears: IReleaseYear[]
+  releaseYears: IReleaseYear[] | null
   status: string
-  seasonsInfo: ISeasonInfo[]
+  seasonsInfo: ISeasonInfo[] | null
   seriesLength: number
   isSeries: true
 }
