@@ -131,7 +131,7 @@ const TVPage = async ({ params: { id } }: TVPageProps) => {
           ))}
       </Section>
 
-      <Section title='Трейлеры' hidden={tv.videos ? false : true}>
+      <Section title='Трейлеры' hidden={!Boolean(tv.videos)}>
         <ScrollbarProvider className='mb-6'>
           {!!tv.videos &&
             tv.videos.trailers.map((trailer, ind) => (

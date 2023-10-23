@@ -132,7 +132,7 @@ const MoviePage = async ({ params: { id } }: AnimePageProps) => {
         </Section>
       )}
 
-      <Section title='Трейлеры' hidden={anime.videos ? true : false}>
+      <Section title='Трейлеры' hidden={!Boolean(anime.videos)}>
         <ScrollbarProvider className='mb-6'>
           {!!anime.videos &&
             anime.videos.trailers.map((trailer, ind) => (

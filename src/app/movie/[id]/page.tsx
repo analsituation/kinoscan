@@ -54,6 +54,8 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
     }
   })
 
+  console.log(Boolean(movie.videos))
+
   // if (!director) {
   //   director = null
   // }
@@ -119,7 +121,7 @@ const MoviePage = async ({ params: { id } }: MoviePageProps) => {
         </ScrollbarProvider>
       </Section>
 
-      <Section title='Трейлеры' hidden={movie.videos ? true : false}>
+      <Section title='Трейлеры' hidden={!Boolean(movie.videos)}>
         <ScrollbarProvider className='mb-6'>
           {!!movie.videos &&
             movie.videos.trailers.map((trailer, ind) => (

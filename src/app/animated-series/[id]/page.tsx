@@ -131,7 +131,7 @@ const TVPage = async ({ params: { id } }: AnimatedTVPageProps) => {
           ))}
       </Section>
 
-      <Section title='Трейлеры' hidden={animatedTv.videos ? false : true}>
+      <Section title='Трейлеры' hidden={!Boolean(animatedTv.videos)}>
         <ScrollbarProvider className='mb-6'>
           {!!animatedTv.videos &&
             animatedTv.videos.trailers.map((trailer, ind) => (
